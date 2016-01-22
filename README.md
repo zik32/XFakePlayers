@@ -1,7 +1,3 @@
 # XFakePlayers
 
-test
-
-test
-
-test
+test test test
