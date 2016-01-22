@@ -10,7 +10,7 @@ function Looking()
 	else
 		PrimitiveLooking()
 	end
-	
+
 	LookAtEx(LookingPoint.X, LookingPoint.Y, LookingPoint.Z)
 end
 
@@ -60,14 +60,3 @@ function ObjectiveLooking()
 
 	LookingPoint = Vec3.New(NavAreaGetField(ViewArea, NavAreaField.Center)) + Vec3.New(0, 0, MyHeight())
 end
-
-
-
-
-
-
-
-
-
-
-

@@ -23,7 +23,7 @@ function Movement()
 end
 
 function PrimitiveMovement()
-	if HasFriendsNear then
+	if HasFriendsNear and IsPlayerPriority(NearestFriend) then
 		if GetDistance(NearestFriend) > 200 then
 			MoveTo(NearestFriend)
 		end
@@ -53,6 +53,10 @@ function ObjectiveMovement()
 		Duck()
 	end
 	
+	
+	-- scenario case here
+	
+	--RandomWalking()
 	ObjectiveWalking()
 end
 
@@ -75,11 +79,14 @@ function CheckStuckMonitor()
 	end
 	
 	LastStuckCheckTime = Ticks()
-		
-	-- TODO:
-	-- add crouch speed calculation
 	
-	if GetDistance(StuckOrigin.X, StuckOrigin.Y, StuckOrigin.Z) < GetMaxSpeed() / 3 then 
+	if IsCrouching() then
+		Divider = 4
+	else
+		Divider = 3
+	end
+	
+	if GetDistance(StuckOrigin.X, StuckOrigin.Y, StuckOrigin.Z) < GetMaxSpeed() / Divider then 
 		StuckWarnings = StuckWarnings + 1
 	else
 		StuckWarnings = StuckWarnings - 1
@@ -136,8 +143,9 @@ function MoveOnChain()
 	end
 	
 	Next = Chain[ChainIndex]
+	Last = Chain[#Chain]
 	
-	if Area == Chain[#Chain] then
+	if Area == Last then
 		if GetGroundedDistance(ChainFinalPoint.X, ChainFinalPoint.Y, ChainFinalPoint.Z) > HUMAN_WIDTH then
 			MoveTo(ChainFinalPoint.X, ChainFinalPoint.Y, ChainFinalPoint.Z)
 		else
@@ -154,7 +162,14 @@ function MoveOnChain()
 				else
 					for I = ChainIndex, #Chain - 1 do
 						Finished = false
-						Portal = Vec3.New(NavAreaGetPortal(Chain[I], Chain[I + 1]))
+						
+						if NavAreaIsConnected(Chain[I], Chain[I + 1]) then
+							Portal = Vec3.New(NavAreaGetPortal(Chain[I], Chain[I + 1]))
+						else
+							BestPoint = Vec3.New(NavAreaGetField(Next, NavAreaField.Center))
+							break
+						end
+						
 						Path = Vec2Line.New(Origin.X, Origin.Y, Portal.X, Portal.Y)
 						
 						for J = ChainIndex + 1, I do
@@ -193,7 +208,7 @@ function MoveOnChain()
 				end
 			else
 				if IsSlowThink and IsOnGround() then
-					ResetObjectiveMovement()
+					return false
 				else
 					V = Vec3.New(NavAreaGetField(Next, NavAreaField.Center))
 					MoveTo(V.X, V.Y, V.Z)
@@ -211,12 +226,44 @@ function BuildChain(AHintText, ADestinationArea)
 	
 	Chain = {NavGetChain(Area, ADestinationArea)}
 	
+	--Chain = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
+	
+	--[[Chain = {
+		NavGetAreaByIndex(22),
+		NavGetAreaByIndex(1787),
+		NavGetAreaByIndex(14),
+		NavGetAreaByIndex(13),
+		NavGetAreaByIndex(280),
+		NavGetAreaByIndex(48),
+		NavGetAreaByIndex(1809),
+		NavGetAreaByIndex(93),
+		NavGetAreaByIndex(228),
+		NavGetAreaByIndex(15),
+		NavGetAreaByIndex(43),
+		NavGetAreaByIndex(2318),
+		NavGetAreaByIndex(2283),
+		NavGetAreaByIndex(2284),
+		NavGetAreaByIndex(283),
+		NavGetAreaByIndex(29)
+	}]]
+	
 	if HasChain() then
 		ChainFinalPoint = Vec3.New(NavAreaGetField(ADestinationArea, NavAreaField.Center))
 		print(AHintText .. NavAreaGetField(ADestinationArea, NavAreaField.TextName))
+		
+		return true
+	else
+		return false
 	end
-	
-	return HasChain()
+end
+
+function RandomWalking()
+	if not MoveOnChain() then
+		ResetObjectiveMovement()
+		ResetStuckMonitor()
+		Chain[1] = NavAreaGetRandomConnection(Area)
+		ChainFinalPoint = Vec3.New(NavAreaGetField(Chain[1], NavAreaField.Center))
+	end
 end
 
 function ObjectiveWalking()

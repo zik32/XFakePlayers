@@ -27,48 +27,35 @@
 
 --[[
 	ExecuteCommand(command: string)
-		исполнить команду (command) на клиенте
+	
 ]]
 -- XBaseGameClient.pas property
 
 --[[
-	GetState(): State
-		получить состо€ние подключени€
-]]
-	State = {
-		NONE = 0,
-		HTTP_DOWNLOADING = 1,
-		DISCONNECTED = 2,
-		WAIT_CHALLENGE = 3,
-		CONNECTING = 4,
-		CONNECTION_ACCEPTED = 5,
-		VERIFYING_RESOURCES = 6, -- or downloading resources
-		SPAWNED = 7,
-		GAME = 8
-	}
---[[
 	GetServer(): str
-		получить адрес сервера, на котором находитс§ акт™р
+		server address as text string
 
 	GetTime(): float
-		получить абсолютное врем§ сервера (svc_time)
+		svc_time
 		
-	GetServerInfo(ServerInfoType): any
-		получить значение из структуры ServerInfo (svc_serverinfo)
-]]
-	ServerInfoType = {
-		Protocol = 0, -- int
-		SpawnCount = 1, -- int
-		CheckSum = 2, -- int
-		CRC = 3, -- int
-		MaxPlayers = 4, -- int
-		Index = 5,    -- your slot at server -- int
-		GameDir = 6, -- str
-		Name = 7, -- str
-		Map = 8, -- str
-		MapEx = 9 -- truncated map name -- str 
-	}
---[[
+	GetProtocol(): int
+		svc_serverinfo.protocol 
+		
+	GetMaxPlayers(): int
+		svc_serverinfo.maxplayers
+	
+	GetClientIndex(): int
+		svc_serverinfo.index
+	
+	GetGameDir(): str
+		svc_serverinfo.gamedir
+		
+	GetMap(): str
+		svc_serverinfo.map
+		
+	GetMaxEx(): str
+		extended version of GetMap() - map name truncated here
+	
 	GetIntermission(): int
 		svc_intermission state
 		
@@ -76,37 +63,22 @@
 		svc_setpause state
 
 	MoveTo(pos: float[3])
-		двигатьс§ к точке
-		
 	MoveTo(ent: int)
-		двигатьс§ к энтити под индексом
+		
 		
 	MoveOut(pos: float[3])
-		двигатьс§ от точки
-		
 	MoveOut(ent: int)
-		двигатьс§ от энтити под индексом
-	
-	LookAt(pos: float[3])
-		посмотреть на точку
 		
+	LookAt(pos: float[3])
 	LookAt(ent: int)
-		посмотреть на энтити под индексом
 		
 	LookAtEx(pos: float[3]) 
-		плавно посмотреть на точку
-	
 	LookAtEx(ent: int) 
-		плавно посмотреть на энтити под индексом
+		lookat equivalent with some smoothing
 
 	PressButton(Button)
-		нажать кнопку
-	
 	UnPressButton(Button)
-		отжать кнопку
-		
 	IsButtonPressed(Button): bool
-		нажата ли кнопка
 ]]
 	Button = {
 		ATTACK = 1 << 0,
@@ -129,43 +101,33 @@
 --[[
 		
 	GetOrigin(): float[3]
-		получить координаты актЄра
-		
+	
 	GetVelocity(): float[3]
-		получить скорость акт™ра
 	
 	GetPunchAngle(): float[3]
-		получить смещение прицела акт™ра (отдача во врем§ стрельбы)
-		
-	GetWeaponIndex(): int
-		получить индекс текущего оружи§ (clientdata.id)
+	
+	GetWeaponAbsoluteIndex(): int
+		clientdata.id
 		
 	GetDistance(pos: float[3]): float
-		получить дистанцию до точки
-		
 	GetDistance(ent: int): float
-		получить дистанцию до энтити
 		
 	GetDistance2D(pos\ent: float[3]\int): float
-		^^
 	
 	IsWeaponExists(weapon): bool
-		есть ли в инвентаре оружие под индексом weapon
+		?
 	
 	IsCrouching(): bool
-		находитс§ ли акт™р в прис§ди
-	
+
 	IsOnGround(): bool
-		находитс§ ли акт™р на земле (на полу)
-		
+
 	IsSpectator(): bool
-		§вл§етс§ ли акт™р наблюдателем
-		
-	HasWeaponData(weapon_index): bool
-		есть ли weapondata_t дл€ данного оружи€
-		
+	
+	HasWeaponData(absolute_weapon_index): bool
+	
 	GetWeaponDataField(weapon_index: int; field: WeaponDataField): any
-		получить значение пол€ (field) из оружи€ под индексом (weapon_index), использу€ массив weapondata_t
+		get field from weapondata_t array for specific weapon
+		
 ]]
 	WeaponDataField = {
 		ID = 1, -- int
@@ -194,169 +156,99 @@
 
 --[[	
 	IsReloading(): bool
-		находитс§ ли акт™р в состо§нии перезар§дки
-		
+	
 	GetMaxSpeed(): float
-		получить максимальную скорость (clientdata.maxspeed & movevars.maxspeed)
-		
+		clientdata.maxspeed & movevars.maxspeed
+	
+	CanAttack(): boolean
+		is clientdata_t.nextattack <= 0
+	
 	IsAlive(): bool
-		жив ли акт™р
 		
 	PrimaryAttack()
-		...
+		equivalent for PressButton(ATTACK)
 		
 	SecondaryAttack()
-		...
+		equivalent for PressButton(ATTACK2)
 		
 	FastPrimaryAttack()
-		...
 		
 	FastSecondaryAttack()
-		...
-
+		
 	Jump()
-		...
+		equivalent for PressButton(JUMP)
 		
 	Duck()
-		...
+		equivalent for PressButton(DUCK)
 		
 	DuckJump()	
-		...
 		
 	GetPlayersCount(): int
+		length of players array
 		
-	GetPlayerField(player: int; field: PlayerField): any
-		получить значение пол§ (field) из игрока под индексом (player), использу§ Players массив
+    GetPlayerUserInfo(player_index): str
+	
+    GetPlayerKills(player_index): int
+
+    GetPlayerDeaths(player_index): int
+
+    GetPlayerPing(player_index): int
+
+    GetPlayerLoss(player_index): int
+
+    GetPlayerTeam(player_index): str
+		based on TeamInfo gmsg event
 		
-]]
-	PlayerField = {
-		UserID = 1, -- int
-		UserInfo = 2, -- : LStr;
-		--MD5 = 3, -- : TMD5Digest; -------> DO NOT USE THIS
-		Kills = 4, -- int 
-		Deaths = 5, -- int
-		Ping = 6, -- int
-		Loss = 7, -- int
-		--Entity = 8, -- int   --------> DO NOT USE DIS 
-
-		-- from gmsgs
-		Team = 9, -- : LStr;
-		ClassID = 10, -- int 
-		TeamID = 11, -- int
-
-		-- cstrike
-		Health = 12, -- int // event hltv
-		ScoreAttrib = 13, -- int // event scoreattrib
-		Location = 14, -- str // event location
-		Radar = 15, -- float[3] // event radar
-
-		-- utils
-		Origin = 16, -- float[3]
-		Name = 17, -- str
+    GetPlayerClassID(player_index): int
+		based on ScoreInfo gmsg event
 		
-		IsCSAlive = 18, -- bool
-		IsCSBomber = 19, -- bool
-		IsCSVIP = 20, -- bool
-		}
---[[	
+    GetPlayerTeamID(player_index): int
+		based on ScoreInfo gmsg event
+		
+    GetPlayerHealth(player_index): int
+		based on HLTV gmsg event (cstrike, czero only)
+		
+    GetPlayerScoreAttrib(player_index): int 
+		based on ScoreAttrib gmsg event (cstrike, czero only)
+		
+    GetPlayerLocation(player_index): str
+		based on Location gmsg event (cstrike, czero only)
+		
+    GetPlayerRadar(player_index): float[3]
+		based on Radar gmsg event (cstrike, czero only)
+		
+    GetPlayerOrigin(player_index): float[3]
+		extended version to resolve player origin
+		it using allocated entity for this player to resolve origin
+		also, if entity isn't active - using GetRadar() instead
+		
+    IsPlayerAlive(player_index): bool
+		based on GetPlayerScoreAttrib(), it will check bit flag SCORE_ATTRIB_FLAG_DEAD
+		working only for cstrike & czero
+		
+    IsPlayerBomber(player_index): bool
+		based on GetPlayerScoreAttrib(), it will check bit flag SCORE_ATTRIB_FLAG_BOMB
+		working only for cstrike & czero
+		
+    IsPlayerVIP(player_index): bool
+		based on GetPlayerScoreAttrib(), it will check bit flag SCORE_ATTRIB_FLAG_VIP
+		working only for cstrike & czero
+		
 	GetEntitiesCount(): int
-		получить количесвто энтити 
+		length of entities array
 		
-	GetEntityField(ent: int; field: EntityField): any
-		получить значение пол§ (field) из энтити под индексом (ent)
-]]
-	EntityField = {
-		EntityType = 1, -- int
-		Number = 2, -- int
+	IsEntityActive(ent_index): bool
+		is entity currenrly spawned for actor
 		
-		MsgTime = 3, -- float
-		MessageNum = 4, -- int
+	GetEntityTeam(ent_index): int
+		entitystate_t.team
 		
-		Origin = 5, -- float[3]
-		Angles = 6, -- float[3]
-		
-		ModelIndex = 7, -- int
-		Sequence = 8, -- int
-		Frame = 9, -- float
-		ColorMap = 10, -- int
-		Skin = 11, -- int
-		Solid = 12, -- int
-		Effects = 13, -- int
-		Scale = 14, -- float
-		EFlags = 15, -- int
-		
-		RenderMode = 16, -- int 
-		RenderAmt = 17, -- int
-		--RenderColor = 18, -- : TRGB;   -----------> FUCK YOU
-		RenderFX = 19, -- int
-		
-		MoveType = 20, -- int
-		AnimTime = 21, -- float
-		FrameRate = 22, -- float
-		Body = 23, -- int
-		--Controller = 24, -- : array[0..3] of Byte; // int32 ?   -----------> DO NOT USE THIS FIELD
-		--Blending = 25, -- : array[0..3] of Byte;     ----------------------> THIS TOO
-
-		Velocity = 26, -- float[3]
-
-		MinS = 27, -- float[3]
-		MaxS = 28, -- float[3]
-
-		AimEnt = 29, -- int
-		Owner = 30, -- int
-
-		Friction = 31, -- float
-		Gravity = 32, -- float
-
-		Team = 33, -- int // tfc
-		PlayerClass = 34, -- int // tfc
-		Health = 35, -- int
-		Spectator = 36, -- int 
-		WeaponModel = 37, -- int 
-		GaitSequence = 38, -- int
-
-		BaseVelocity = 39, -- float[3]
-		UseHull = 40, -- int
-		OldButtons = 41, -- int 
-		OnGround = 42, -- int 
-		StepLeft = 43, -- int
-
-		FallVelocity = 44, -- float
-
-		FOV = 45, -- float
-		WeaponAnim = 46, -- int
-
-		StartPos = 47, -- float[3] 
-		EndPos = 48, -- float[3]
-		ImpactTime = 49, -- float
-		StartTime = 50, -- float
-
-		IUser1 = 51, -- int 
-		IUser2 = 52, -- int 
-		IUser3 = 53, -- int 
-		IUser4 = 54, -- int
-		
-		FUser1 = 55, -- float
-		FUser2 = 56, -- float
-		FUser3 = 57, -- float
-		FUser4 = 58, -- float
-		
-		VUser1 = 59, -- float[3]
-		VUser2 = 60, -- float[3]
-		VUser3 = 61, -- float[3]
-		VUser4 = 62, -- float[3]
-		
-		IsActive = 63 -- bool
-	}
---[[
 	GetGroundedOrigin(): float[3]
-		тоже самое что и GetOrigin, однако получаем координаты поверхности, где стоит актЄр
+		equivalent for GetOrigin with subtracted human height
 	
 	GetGroundedDistance(origin: float[3]): float
-		тоже самое что и GetDistance, однако вычислени€ ведЄтс€ использу€ GetGroundedOrigin
-		
 	GetGroundedDistance(ent: int): float
-		...
+		see below
 
 ]]
 
@@ -364,34 +256,43 @@
 
 --[[
 	GetHealth(): int
-		получить очки здоровь§ акт™ра (EHealth)
+		Health gmsg event
 		
 	GetWeaponsCount(): int
-		получить количество доступного оружи€
+		length of weapon list (WeaponList gmsg event)
 		
-	GetWeaponField(weapon: int; field: WeaponField): any
-		получить значение пол€ (field) из оружи€ под индексом (weapon)
-]]
-	WeaponField = {
-		Name = 1, -- string
-		PrimaryAmmoID = 2, -- int
-		PrimaryAmmoMaxAmount = 3, -- int
-		SecondaryAmmoID = 4, -- int
-		SecondaryAmmoMaxAmount = 5, -- int
-		SlotID = 6, -- int
-		NumberInSlot = 7, -- int
-		Index = 8, -- int
-		Flags = 9,  -- int
+		-> next weapon functions using WeaponList array, be careful
 		
-		ResolvedName = 10 -- string
-	}
-
---[[
+    GetWeaponName(index_in_weaponlist): str
+    
+	GetWeaponPrimaryAmmoID(index_in_weaponlist): int
+    
+	GetWeaponPrimaryAmmoMaxAmount(index_in_weaponlist): int
+    
+	GetWeaponSecondaryAmmoID(index_in_weaponlist): int
+    
+	GetWeaponSecondaryAmmoMaxAmount(index_in_weaponlist): int
+    
+	GetWeaponSlotID(index_in_weaponlist): int
+    
+	GetWeaponNumberInSlot(index_in_weaponlist): int
+    
+	GetWeaponIndex(index_in_weaponlist): int
+		return absolute index for given weapon
+    
+	GetWeaponFlags(index_in_weaponlist): int
+    
+	GetWeaponNameEx(index_in_weaponlist): str
+		truncated version of GetWeaponName, weapon_m4a1 -> m4a1
+		
+	GetWeaponByAbsoluteIndex(absolute_weapon_index): int
+		return weapon index from weaponlist array (WeaponList gmsg event) for using with extended weapon functions
+	
 	IsTeamPlay(): bool
-		reading EGameMode event status
+		gamemode gmsg event state
 		
 	GetAmmo(weapon: int): int
-		reading EAmmoX event
+		ammox gmsg event
 ]]
 
 -- XPlayableClient.pas property
@@ -407,19 +308,13 @@
 		is ways (*.way) file loaded
 		
 	IsVisible(pos: float[3]): bool
-		видна ли точка из глаз актЄра (используетс§ bsp карта дл§ анализа)
-		
 	IsVisible(ent: int): bool
-		тоже самое, только дл§ энтити
 		
 	NavGetArea(pos: float[3]): int
-		получить абсолютный индекс зоны из NAV файла
-	
 	NavGetArea(ent: int): int
-		same..^
 		
 	NavAreaGetField(area: int; field: NavAreaField): any
-		...
+	
 ]]
 	NavAreaField = {
 		Index = 1, -- int - unique area index
@@ -436,26 +331,12 @@
 	}
 --[[		
 	NavGetRandomArea(): int
-		...
-		
 	NavGetChain(area1, area2: int): int[any]
-		...
-		
 	NavAreaIsConnected(area1, area2: int): bool
-		...
-	
 	NavAreaGetPortal(area1, area2: int): float[3]
-		...
-		
 	NavAreaGetPortal(area1, area2: int; start, end: float[3])
-		...
-		
 	NavAreaGetWindow(area1, area2: int): float[6]
-		...
-		
 	NavAreaIsBiLinked(area1, area2: int): bool
-		...
-		
 	NavAreaApproachGetField(area, approach: int; field: NavApproachField): any
 ]]
 	NavApproachField = {
@@ -470,21 +351,6 @@
 --[[
 
 ]]
-	
-
--- personal 
-
-	ModificationType = {
-		Unknown = 0,
-		HalfLife = 1,
-		CounterStrike = 2,
-		ConditionZero = 3,
-		DayOfDefeat = 4,
-		DeathmatchClassic = 5,
-		OpposingForce = 6,
-		Ricochet = 7,
-		TeamFortressClassic = 8
-	}
 
 -- Protocol.pas property
 

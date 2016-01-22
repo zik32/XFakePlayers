@@ -25,11 +25,11 @@ function Attack()
 
 	LastAttackTime = Ticks()
 	
-	if Modification == ModificationType.HalfLife then
+	if GetGameDir() == "valve" then
 		Attack_HL()
-	elseif Modification == ModificationType.CounterStrike then
+	elseif GetGameDir() == "cstrike" then
 		Attack_CS()
-	elseif Modification == ModificationType.ConditionZero then
+	elseif GetGameDir() == "czero" then
 		Attack_CS()
 	else
 		PrimaryAttack()
@@ -41,16 +41,16 @@ function Attack_HL()
 end
 
 function Attack_CS()
-	Slot = GetWeaponField(CurrentWeapon, WeaponField.SlotID)
+	Slot = GetWeaponSlotID(CurrentWeapon)
 	
 	if Slot == CS_WEAPON_SLOT_RIFLE then
-		if CanUseWeapon(CurrentWeapon, true) then
+		if CanUseWeapon(CurrentWeapon, true) then -- for reload able
 			PrimaryAttack()
 		end
 	elseif Slot == CS_WEAPON_SLOT_PISTOL then
 		FastPrimaryAttack()
 	elseif Slot == CS_WEAPON_SLOT_KNIFE then
-		KnifeAttack(True)
+		KnifeAttack(true)
 	end
 end
 

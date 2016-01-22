@@ -1,5 +1,4 @@
--- common vars
-	Modification = ModificationType.Unknown
+-- common vars		
 	Origin = {}
 
 	IsSlowThink = false

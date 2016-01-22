@@ -7,16 +7,11 @@ dofile "ai/protocol.lua"  -- see this file to get help
 dofile "ai/think.lua"
 
 function Initialization()
-	LastKnownWeapon = FindWeaponByIndex(GetWeaponIndex())
+	LastKnownWeapon = GetWeaponByAbsoluteIndex(GetWeaponAbsoluteIndex())
 	IsSpawned = IsAlive()
-	FindModification()
 	
 	if Idle then
 		print "Idle mode"
-	end
-	
-	if Modification == ModificationType.Unknown then
-		print "AI cannot be run under this modification"
 	end
 end
 

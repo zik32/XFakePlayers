@@ -1,5 +1,12 @@
 -- movement
 	SlowJumpTime = 0
+	
+	ScenarioType = {
+		None = 0,
+		Walking = 1
+	}
+	
+	Scenario = ScenarioType.None
 
 	Area = nil
 	PrevArea = nil
@@ -70,32 +77,22 @@ end
 -- weapon utils	
 	
 function FindCurrentWeapon()
-	CurrentWeapon = FindWeaponByIndex(GetWeaponIndex())
+	CurrentWeapon = GetWeaponByAbsoluteIndex(GetWeaponAbsoluteIndex())
 
 	if (LastKnownWeapon ~= CurrentWeapon) and (CurrentWeapon ~= 0) and (LastKnownWeapon ~= 0) then
-		print("choosed: " .. GetWeaponField(CurrentWeapon, WeaponField.ResolvedName))
+		print("choosed: " .. GetWeaponNameEx(CurrentWeapon))
 	end
 
 	LastKnownWeapon = CurrentWeapon
 end
 
-function FindWeaponByIndex(AIndex)
-	for I = 0, GetWeaponsCount() - 1 do
-		if GetWeaponField(I, WeaponField.Index) == AIndex then
-			return(I)
-		end
-	end
-	
-	return nil
-end
-
 function FindWeaponBySlot(ASlot)
 	Weapon = nil
-	Weight = 0
+	Weight = -1
 	
 	for I = 0, GetWeaponsCount() - 1 do
-		if IsWeaponExists(GetWeaponField(I, WeaponField.Index)) then
-			if GetWeaponField(I, WeaponField.SlotID) == ASlot then
+		if IsWeaponExists(GetWeaponIndex(I)) then
+			if GetWeaponSlotID(I) == ASlot then
 				if GetWeaponWeight(I) > Weight then
 					Weapon = I
 					Weight = GetWeaponWeight(I)
@@ -120,15 +117,15 @@ function ChooseWeapon(AWeapon)
 		return
 	end
 	
-	ExecuteCommand(GetWeaponField(AWeapon, WeaponField.Name))
+	ExecuteCommand(GetWeaponName(AWeapon))
 end
 
 function GetWeaponClip(AWeapon)
-	if not HasWeaponData(GetWeaponField(AWeapon, WeaponField.Index)) then
-		return(0)
+	if not HasWeaponData(GetWeaponIndex(AWeapon)) then
+		return 0
 	end
 	
-	return GetWeaponDataField(GetWeaponField(AWeapon, WeaponField.Index), WeaponDataField.Clip)
+	return GetWeaponDataField(GetWeaponIndex(AWeapon), WeaponDataField.Clip)
 end
 
 function HasWeaponClip(AWeapon)
@@ -136,7 +133,7 @@ function HasWeaponClip(AWeapon)
 end
 
 function GetWeaponPrimaryAmmo(AWeapon) 
-	return GetAmmo(GetWeaponField(AWeapon, WeaponField.PrimaryAmmoID))
+	return GetAmmo(GetWeaponPrimaryAmmoID(AWeapon))
 end
 
 function HasWeaponPrimaryAmmo(AWeapon)
@@ -144,7 +141,7 @@ function HasWeaponPrimaryAmmo(AWeapon)
 end
 
 function GetWeaponSecondaryAmmo(AWeapon)
-	return GetAmmo(GetWeaponField(AWeapon, WeaponField.SecondaryAmmoID))
+	return GetAmmo(GetWeaponSecondaryAmmoID(AWeapon))
 end
 
 function HasWeaponSeconadryAmmo(AWeapon)
@@ -172,12 +169,10 @@ function CanUseWeapon(AWeapon, IsInstant)
 end
 
 function GetWeaponMaxClip(AWeapon)
-	Index = GetWeaponField(AWeapon, WeaponField.Index)
-	
-	if (Modification == ModificationType.CounterStrike) or (Modification == ModificationType.ConditionZero) then
-		return CSWeapons[Index].MaxClip
-	elseif Modification == ModificationType.HalfLife then
-		return HLWeapons[Index].MaxClip
+	if (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
+		return CSWeapons[GetWeaponIndex(AWeapon)].MaxClip
+	elseif GetGameDir() == "valve" then
+		return HLWeapons[GetWeaponIndex(AWeapon)].MaxClip
 	else
 		print "GetWeaponMaxClip(AWeapon) doesnt support this game modification"
 		return nil
@@ -185,12 +180,10 @@ function GetWeaponMaxClip(AWeapon)
 end
 
 function GetWeaponWeight(AWeapon)
-	Index = GetWeaponField(AWeapon, WeaponField.Index)
-	
-	if (Modification == ModificationType.CounterStrike) or (Modification == ModificationType.ConditionZero) then
-		return CSWeapons[Index].Weight
-	elseif Modification == ModificationType.HalfLife then
-		return HLWeapons[Index].Weight
+	if (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
+		return CSWeapons[GetWeaponIndex(AWeapon)].Weight
+	elseif GetGameDir() == "valve" then
+		return HLWeapons[GetWeaponIndex(AWeapon)].Weight
 	else
 		print "GetWeaponWeight(AWeapon) doesnt support this game modification"
 		return nil
@@ -234,7 +227,7 @@ end
 -- common utils
 
 function Behavior.Randomize()
-	if (Modification == ModificationType.CounterStrike) or (Modification == ModificationType.ConditionZero) then
+	if (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
 		Behavior.MoveWhenShooting = Chance(50)
 		Behavior.CrouchWhenShooting = Chance(50)
 		Behavior.MoveWhenReloading = Chance(50)
@@ -253,19 +246,18 @@ end
 
 function IsEnemy(player_index)
 	if IsTeamPlay() --[[and not FriendlyFire]] then
-		if (Modification == ModificationType.TeamFortressClassic) 
-		or (Modification == ModificationType.DayOfDefeat) then
+		if (GetGameDir() == "tfc") or (GetGameDir() == "dod") then
 			-- dod & tfc not using absolute team names, we need to compare team indexes from entities array
 		
-			T1 = GetEntityField(GetServerInfo(ServerInfoType.Index) + 1, EntityField.Team)
-			T2 = GetEntityField(player_index + 1, EntityField.Team)
+			T1 = GetEntityTeam(GetClientIndex() + 1)
+			T2 = GetEntityTeam(player_index + 1)
 			
 			return T1 ~= T2
 		else 		
 			-- we can compare team names from players array for all other mods
 		
-			T1 = GetPlayerField(GetServerInfo(ServerInfoType.Index), PlayerField.Team)
-			T2 = GetPlayerField(player_index, PlayerField.Team)
+			T1 = GetPlayerTeam(GetClientIndex())
+			T2 = GetPlayerTeam(player_index)
 			
 			return T1 ~= T2
 		end
@@ -275,7 +267,7 @@ function IsEnemy(player_index)
 end
 
 function IsPlayerPriority(APlayer)
-	return APlayer > GetServerInfo(ServerInfoType.Index)
+	return APlayer < GetClientIndex()
 end
 
 function FindEnemiesAndFriends()
@@ -294,9 +286,9 @@ function FindEnemiesAndFriends()
 	FriendKills = 0
 		
 	for I = 1, GetPlayersCount() do
-		if I ~= GetServerInfo(ServerInfoType.Index) + 1 then
-			if GetEntityField(I, EntityField.IsActive) then
-				if GetPlayerField(I - 1, PlayerField.IsCSAlive) then
+		if I ~= GetClientIndex() + 1 then
+			if IsEntityActive(I) then
+				if IsPlayerAlive(I - 1) then
 					if (HasWorld() and IsVisible(I)) or not HasWorld() then
 						if IsEnemy(I - 1) then
 							EnemiesNearCount = EnemiesNearCount + 1
@@ -306,8 +298,8 @@ function FindEnemiesAndFriends()
 								NearestEnemy = I
 							end
 						
-							if GetPlayerField(I - 1, PlayerField.Kills) > EnemyKills then
-								EnemyKills = GetPlayerField(I - 1, PlayerField.Kills)
+							if GetPlayerKills(I - 1) > EnemyKills then
+								EnemyKills = GetPlayerKills(I - 1)
 								NearestLeaderEnemy = I
 							end					
 						else
@@ -318,8 +310,8 @@ function FindEnemiesAndFriends()
 								NearestFriend = I
 							end
 						
-							if GetPlayerField(I - 1, PlayerField.Kills) > FriendKills then
-								FriendKills = GetPlayerField(I - 1, PlayerField.Kills)
+							if GetPlayerKills(I - 1) > FriendKills then
+								FriendKills = GetPlayerKills(I - 1)
 								NearestLeaderFriend = I
 							end	
 						end
@@ -331,26 +323,4 @@ function FindEnemiesAndFriends()
 
 	HasEnemiesNear = EnemiesNearCount > 0
 	HasFriendsNear = FriendsNearCount > 0
-end
-
-function FindModification()
-	Folder = GetServerInfo(ServerInfoType.GameDir)
-	
-	if Folder == "valve" then
-		Modification = ModificationType.HalfLife
-	elseif Folder == "cstrike" then
-		Modification = ModificationType.CounterStrike
-	elseif Folder == "czero" then
-		Modification = ModificationType.ConditionZero
-	elseif Folder == "dod" then
-		Modification = ModificationType.DayOfDefeat
-	elseif Folder == "dmc" then
-		Modification = ModificationType.DeathmatchClassic
-	elseif Folder == "gearbox" then
-		Modification = ModificationType.OpposingForce
-	elseif Folder == "ricochet" then
-		Modification = ModificationType.Ricochet
-	elseif Folder == "tfc" then
-		Modification = ModificationType.TeamFortressClassic
-	end		
 end

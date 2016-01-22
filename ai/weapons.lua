@@ -32,16 +32,12 @@ function ChooseBestWeapon()
 		return
 	end
 
-	if Modification == ModificationType.HalfLife then
+	if GetGameDir() == "valve" then
 		ChooseBestWeapon_HL()
-	elseif Modification == ModificationType.CounterStrike then
+	elseif GetGameDir() == "cstrike" then
 		ChooseBestWeapon_CS()
-	elseif Modification == ModificationType.ConditionZero then
+	elseif GetGameDir() == "czero" then
 		ChooseBestWeapon_CS()
-	elseif Modification == ModificationType.DeathmatchClassic then
-		ChooseBestWeapon_DMC()
-	elseif Modification == ModificationType.TeamFortressClassic then
-		ChooseBestWeapon_TFC()
 	end
 end
 
@@ -75,12 +71,4 @@ function ChooseBestWeapon_CS()
 			ChooseWeapon(Knife)
 		end
 	end
-end
-
-function ChooseBestWeapon_DMC()
-
-end
-
-function ChooseBestWeapon_TFC()
-
 end
