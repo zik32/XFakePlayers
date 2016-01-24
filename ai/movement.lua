@@ -11,28 +11,24 @@ function Movement()
 		return
 	end
 	
-	if HasNavigation() then
-		ObjectiveMovement()
-	else
-		PrimitiveMovement()		
+	if not Idle then
+		if HasNavigation() then
+			ObjectiveMovement()
+		else
+			PrimitiveMovement()		
+		end
 	end
-	
-	if HasFriendsNear and (GetDistance(NearestFriend) < 50) and IsPlayerPriority(NearestFriend) then
+		
+	if HasFriendsNear and (GetDistance(NearestFriend) < 50) --[[and IsPlayerPriority(NearestFriend)]] then
 		MoveOut(NearestFriend)
 	end
 end
 
 function PrimitiveMovement()
-	if HasFriendsNear and IsPlayerPriority(NearestFriend) then
-		if GetDistance(NearestFriend) > 200 then
-			MoveTo(NearestFriend)
+	if HasPlayersNear then
+		if GetDistance(NearestPlayer) > 200 then
+			MoveTo(NearestPlayer)
 		end
-	end
-	
-	if HasEnemiesNear then
-		if GetDistance(NearestEnemy) > 200 then
-			MoveTo(NearestEnemy)
-		end		
 	end
 end
 
@@ -41,7 +37,7 @@ function ObjectiveMovement()
 		return
 	end
 	
-	A = NavGetArea(GetGroundedOrigin()) 
+	A = GetNavArea() 
 	IsAreaChanged = Area ~= A
 	
 	if IsAreaChanged then
@@ -49,14 +45,13 @@ function ObjectiveMovement()
 		Area = A
 	end
 	
-	if NavAreaGetField(Area, NavAreaField.Flags) & NAV_AREA_CROUCH > 0 then
+	if GetNavAreaFlags(Area) & NAV_AREA_CROUCH > 0 then
 		Duck()
 	end
 	
 	
 	-- scenario case here
 	
-	--RandomWalking()
 	ObjectiveWalking()
 end
 
@@ -70,18 +65,20 @@ function ResetStuckMonitor()
 end
 
 function CheckStuckMonitor()
-	if not IsSlowThink then
+	if DeltaTicks(LastStuckMonitorTime) < STUCK_CHECK_PERIOD then
 		return
 	end
 	
-	if DeltaTicks(LastStuckCheckTime) >= SLOWTHINK_PERIOD * 2 then
+	LastStuckMonitorTime = Ticks()
+	
+	if DeltaTicks(LastStuckCheckTime) >= STUCK_CHECK_PERIOD * 2 then
 		ResetStuckMonitor()
 	end
 	
 	LastStuckCheckTime = Ticks()
 	
 	if IsCrouching() then
-		Divider = 4
+		Divider = 5
 	else
 		Divider = 3
 	end
@@ -156,24 +153,24 @@ function MoveOnChain()
 			ChainIndex = ChainIndex + 1
 			MoveOnChain()
 		else
-			if NavAreaIsConnected(Area, Next) then			
+			if IsNavAreaConnected(Area, Next) then			
 				if ChainIndex == #Chain then
 					BestPoint = ChainFinalPoint
 				else
 					for I = ChainIndex, #Chain - 1 do
 						Finished = false
 						
-						if NavAreaIsConnected(Chain[I], Chain[I + 1]) then
-							Portal = Vec3.New(NavAreaGetPortal(Chain[I], Chain[I + 1]))
+						if IsNavAreaConnected(Chain[I], Chain[I + 1]) then
+							Portal = Vec3.New(GetNavAreaPortal(Chain[I], Chain[I + 1]))
 						else
-							BestPoint = Vec3.New(NavAreaGetField(Next, NavAreaField.Center))
+							BestPoint = Vec3.New(GetNavAreaCenter(Next))
 							break
 						end
 						
 						Path = Vec2Line.New(Origin.X, Origin.Y, Portal.X, Portal.Y)
 						
 						for J = ChainIndex + 1, I do
-							Window = Vec3Line.New(NavAreaGetWindow(Chain[J - 1], Chain[J]))
+							Window = Vec3Line.New(GetNavAreaWindow(Chain[J - 1], Chain[J]))
 							
 							if not IsVecLinesIntersectedIn2D(Window, Path) then
 								Finished = true
@@ -189,20 +186,20 @@ function MoveOnChain()
 					end
 				end
 				
-				Portal = Vec3.New(NavAreaGetPortal(Area, Next, Origin.X, Origin.Y, Origin.Z, BestPoint.X, BestPoint.Y, BestPoint.Z))
+				Portal = Vec3.New(GetNavAreaPortal(Area, Next, Origin.X, Origin.Y, Origin.Z, BestPoint.X, BestPoint.Y, BestPoint.Z))
 				
 				if GetDistance2D(Portal.X, Portal.Y, Portal.Z) > HUMAN_WIDTH + HUMAN_WIDTH_HALF then
 					MoveTo(Portal.X, Portal.Y, Portal.Z)
 				else 
 					MoveTo(BestPoint.X, BestPoint.Y, BestPoint.Z)
 					
-					if (not NavAreaIsBiLinked(Area, Next) and (NavAreaGetField(Area, NavAreaField.Flags) & NAV_AREA_NO_JUMP == 0))
-					or (NavAreaGetField(Next, NavAreaField.Flags) & NAV_AREA_JUMP > 0)
-					or (NavAreaGetField(Area, NavAreaField.Flags) & NAV_AREA_JUMP > 0) then
+					if (not IsNavAreaBiLinked(Area, Next) and (GetNavAreaFlags(Area) & NAV_AREA_NO_JUMP == 0))
+					or (GetNavAreaFlags(Next) & NAV_AREA_JUMP > 0)
+					or (GetNavAreaFlags(Area) & NAV_AREA_JUMP > 0) then
 						SlowDuckJump()
 					end
 					
-					if NavAreaGetField(Next, NavAreaField.Flags) & NAV_AREA_CROUCH > 0 then
+					if GetNavAreaFlags(Next) & NAV_AREA_CROUCH > 0 then
 						Duck()
 					end 
 				end
@@ -210,7 +207,7 @@ function MoveOnChain()
 				if IsSlowThink and IsOnGround() then
 					return false
 				else
-					V = Vec3.New(NavAreaGetField(Next, NavAreaField.Center))
+					V = Vec3.New(GetNavAreaCenter(Next))
 					MoveTo(V.X, V.Y, V.Z)
 				end
 			end
@@ -224,32 +221,32 @@ function BuildChain(AHintText, ADestinationArea)
 	ResetObjectiveMovement()
 	ResetStuckMonitor()
 	
-	Chain = {NavGetChain(Area, ADestinationArea)}
+	Chain = {GetNavChain(Area, ADestinationArea)}
 	
 	--Chain = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
 	
 	--[[Chain = {
-		NavGetAreaByIndex(22),
-		NavGetAreaByIndex(1787),
-		NavGetAreaByIndex(14),
-		NavGetAreaByIndex(13),
-		NavGetAreaByIndex(280),
-		NavGetAreaByIndex(48),
-		NavGetAreaByIndex(1809),
-		NavGetAreaByIndex(93),
-		NavGetAreaByIndex(228),
-		NavGetAreaByIndex(15),
-		NavGetAreaByIndex(43),
-		NavGetAreaByIndex(2318),
-		NavGetAreaByIndex(2283),
-		NavGetAreaByIndex(2284),
-		NavGetAreaByIndex(283),
-		NavGetAreaByIndex(29)
+		GetNavArea(22),
+		GetNavArea(1787),
+		GetNavArea(14),
+		GetNavArea(13),
+		GetNavArea(280),
+		GetNavArea(48),
+		GetNavArea(1809),
+		GetNavArea(93),
+		GetNavArea(228),
+		GetNavArea(15),
+		GetNavArea(43),
+		GetNavArea(2318),
+		GetNavArea(2283),
+		GetNavArea(2284),
+		GetNavArea(283),
+		GetNavArea(29)
 	}]]
 	
 	if HasChain() then
-		ChainFinalPoint = Vec3.New(NavAreaGetField(ADestinationArea, NavAreaField.Center))
-		print(AHintText .. NavAreaGetField(ADestinationArea, NavAreaField.TextName))
+		ChainFinalPoint = Vec3.New(GetNavAreaCenter(ADestinationArea))
+		print(AHintText .. GetNavAreaName(ADestinationArea))
 		
 		return true
 	else
@@ -257,17 +254,8 @@ function BuildChain(AHintText, ADestinationArea)
 	end
 end
 
-function RandomWalking()
-	if not MoveOnChain() then
-		ResetObjectiveMovement()
-		ResetStuckMonitor()
-		Chain[1] = NavAreaGetRandomConnection(Area)
-		ChainFinalPoint = Vec3.New(NavAreaGetField(Chain[1], NavAreaField.Center))
-	end
-end
-
 function ObjectiveWalking()
 	if not MoveOnChain() then
-		BuildChain("walking to ", NavGetRandomArea())
+		BuildChain("walking to ", GetRandomNavArea())
 	end
 end

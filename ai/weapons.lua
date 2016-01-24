@@ -2,6 +2,7 @@
 function Weapons()
 	ReloadCurrentWeapon()
 	ChooseBestWeapon()
+	BuyWeapons()
 end
 
 function ReloadCurrentWeapon()
@@ -71,4 +72,32 @@ function ChooseBestWeapon_CS()
 			ChooseWeapon(Knife)
 		end
 	end
+end
+
+function BuyWeapons()
+	if not NeedToBuyWeapons then
+		return
+	end
+	
+	if (GetGameDir() ~= "cstrike") and (GetGameDir() ~= "czero") then
+		return
+	end
+	
+	if not IsSlowThink then
+		return
+	end
+
+	Icon = FindStatusIconByName("buyzone")
+	
+	if Icon == nil then
+		return
+	end
+	
+	if GetStatusIconStatus(Icon) == 0 then
+		return
+	end
+	
+	ExecuteCommand("autobuy")
+	
+	NeedToBuyWeapons = false
 end

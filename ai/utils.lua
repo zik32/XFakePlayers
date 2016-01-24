@@ -1,4 +1,5 @@
 -- movement
+	SLOW_JUMP_PERIOD = 1000
 	SlowJumpTime = 0
 	
 	ScenarioType = {
@@ -16,6 +17,9 @@
 	ChainIndex = 0
 	ChainFinalPoint = {}
 	
+	STUCK_CHECK_PERIOD = 500
+	LastStuckMonitorTime = 0
+	
 	LastStuckCheckTime = 0
 	StuckWarnings = 0
 	UnstuckWarnings = 0
@@ -30,6 +34,8 @@
 
 	CurrentWeapon = nil
 	LastKnownWeapon = nil -- only for hint
+	
+	NeedToBuyWeapons = false
 	
 -- attack
 	LastAttackTime = 0
@@ -53,6 +59,11 @@
     NearestLeaderFriend = nil
     FriendsNearCount = 0
     HasFriendsNear = false
+	
+	NearestPlayer = nil
+	NearestLeaderPlayer = nil
+	PlayersNearCount = 0
+	HasPlayersNear = false
 
 -- movement utils
 
@@ -65,7 +76,7 @@ function HasChain()
 end
 	
 function SlowDuckJump()
-	if DeltaTicks(SlowJumpTime) < SLOWTHINK_PERIOD then
+	if DeltaTicks(SlowJumpTime) < SLOW_JUMP_PERIOD then
 		return
 	end
 	
@@ -262,7 +273,11 @@ function IsEnemy(player_index)
 			return T1 ~= T2
 		end
 	else
-		return true
+		if GetGameDir() == "svencoop" then
+			return false
+		else
+			return true
+		end
 	end
 end
 
@@ -278,18 +293,37 @@ function FindEnemiesAndFriends()
 	NearestFriend = nil;
 	NearestLeaderFriend = nil;
 	FriendsNearCount = 0;
-
+	
+	NearestPlayer = nil
+	NearestLeaderPlayer = nil
+	PlayersNearCount = 0
+	
 	EnemyDistance = MAX_UNITS
 	EnemyKills = 0
 
 	FriendDistance = MAX_UNITS
 	FriendKills = 0
+	
+	PlayerDistance = MAX_UNITS
+	PlayerKills = 0
 		
 	for I = 1, GetPlayersCount() do
 		if I ~= GetClientIndex() + 1 then
 			if IsEntityActive(I) then
 				if IsPlayerAlive(I - 1) then
 					if (HasWorld() and IsVisible(I)) or not HasWorld() then
+						PlayersNearCount = PlayersNearCount + 1
+						
+						if GetDistance(I) < PlayerDistance then
+							PlayerDistance = GetDistance(I)
+							NearestPlayer = I
+						end
+							
+						if GetPlayerKills(I - 1) > PlayerKills then
+							PlayerKills = GetPlayerKills(I - 1)
+							NearestLeaderPlayer = I
+						end
+
 						if IsEnemy(I - 1) then
 							EnemiesNearCount = EnemiesNearCount + 1
 						
@@ -320,7 +354,18 @@ function FindEnemiesAndFriends()
 			end			
 		end
 	end
-
+	
 	HasEnemiesNear = EnemiesNearCount > 0
 	HasFriendsNear = FriendsNearCount > 0
+	HasPlayersNear = PlayersNearCount > 0
+end
+
+function FindStatusIconByName(AName)
+	for I = 0, GetStatusIconsCount() - 1 do
+		if GetStatusIconName(I) == AName then
+			return I
+		end
+	end
+		
+	return nil
 end

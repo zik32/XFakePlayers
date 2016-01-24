@@ -259,7 +259,7 @@
 		Health gmsg event
 		
 	GetWeaponsCount(): int
-		length of weapon list (WeaponList gmsg event)
+		length of weapon array (WeaponList gmsg event)
 		
 		-> next weapon functions using WeaponList array, be careful
 		
@@ -288,6 +288,13 @@
 	GetWeaponByAbsoluteIndex(absolute_weapon_index): int
 		return weapon index from weaponlist array (WeaponList gmsg event) for using with extended weapon functions
 	
+	GetStatusIconsCount(): int
+		length of status icon array (StatusIcon gmsg event)
+		
+	GetStatusIconName(statusicon_index: int): str
+	
+	GetStatusIconStatus(statusicon_index: int): int
+	
 	IsTeamPlay(): bool
 		gamemode gmsg event state
 		
@@ -309,46 +316,68 @@
 		
 	IsVisible(pos: float[3]): bool
 	IsVisible(ent: int): bool
+		checks visibility of object (or point) from actor's eyes
 		
-	NavGetArea(pos: float[3]): int
-	NavGetArea(ent: int): int
-		
-	NavAreaGetField(area: int; field: NavAreaField): any
+	GetVisiblePlayerPart(player_index: int): float[3]
 	
-]]
-	NavAreaField = {
-		Index = 1, -- int - unique area index
-		Flags = 2, -- int - set of attribute bit flags
-		TextName = 3, -- str - resolve area name
-		Center = 4, -- float[3] - get center in world
+	GetNavArea(): int
+		search and return absolute nav area index by actor's origin
 		
-		ConnectionsCount = 5, -- int
-		HidingSpotsCount = 6, -- int
-		ApproachesCount = 7, -- int
-		EncountersCount = 8, -- int
-		LaddersCount = 9, -- int
-		VisiblesCount = 10 -- int
-	}
---[[		
-	NavGetRandomArea(): int
-	NavGetChain(area1, area2: int): int[any]
-	NavAreaIsConnected(area1, area2: int): bool
-	NavAreaGetPortal(area1, area2: int): float[3]
-	NavAreaGetPortal(area1, area2: int; start, end: float[3])
-	NavAreaGetWindow(area1, area2: int): float[6]
-	NavAreaIsBiLinked(area1, area2: int): bool
-	NavAreaApproachGetField(area, approach: int; field: NavApproachField): any
-]]
-	NavApproachField = {
-		Here = 1, -- int - the approach area
-		Prev = 2, -- int - the area just before the approach area on the path
-		PrevToHereHow = 3, -- int
-		Next = 4, -- int - the area just after the approach area on the path
-		HereToNextHow = 5, -- int -
-		Parent = 6 -- int
-	}
+	GetNavArea(index: int): int
+		search and return absolute nav area index by nav area index
+		
+	GetNavArea(pos: float[3]): int
+		search and return absolute nav area index by position
+		
+	GetRandomNavArea(): int
+		this will return random nav area from navigation mesh
+		
+    GetNavAreaIndex(area: int): int
+		return unique nav area index for given nav area
+    
+	GetNavAreaFlags(area: int): int
+    
+	GetNavAreaName(area: int): str
+		nav area name contains name of location, where nav area stays (if location name set) and unique nav area index
+    
+	GetNavAreaCenter(area: int): float[3]
+		return nav area center coords in world
+    
+	GetNavAreaConnectionsCount(area: int): int
+		return count of nav areas which connected to given nav area
+    
+	GetNavAreaHidingSpotsCount(area: int): int
+    
+	GetNavAreaApproachesCount(area: int): int
+	
+    GetNavAreaApproachHere(area, approach: int): int
+    
+	GetNavAreaApproachPrev(area, approach: int): int
+    
+	GetNavAreaApproachNext(area, approach: int): int
+    
+	GetNavAreaEncountersCount(area: int): int
+    
+	GetNavAreaLaddersCount(area: int): int
+	
+	GetNavAreaRandomConnection(area: int): int
+		return random ajacent nav area for given area
 
---[[
+    IsNavAreaConnected(area1, area2: int): bool
+	
+    IsNavAreaBiLinked(area1, area2: int): bool
+	
+	GetNavAreaPortal(area1, area2: int): float[3]
+		return coords in world of portal between two connected areas
+		
+	GetNavAreaPortal(area1, area: int; start, end: float[3])
+		extended version of GetNavAreaPortal(...) 
+	
+	GetNavAreaWindow(area1, area2: int): float[6]
+		return coords of two points between two connected areas
+
+	GetNavChain(area1, area2): array of int
+		
 
 ]]
 

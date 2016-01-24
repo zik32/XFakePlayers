@@ -9,7 +9,7 @@
 -- global constants
 	Idle = false
 
-	SLOWTHINK_PERIOD = 500
+	SLOWTHINK_PERIOD = 750
 	
 	KNIFE_PRIMARY_ATTACK_DISTANCE = HUMAN_HEIGHT_STAND * 2
 	KNIFE_ALTERNATIVE_ATTACK_DISTANCE = KNIFE_PRIMARY_ATTACK_DISTANCE / 1.5
@@ -63,6 +63,8 @@ end
 
 function Spawn()
 	IsSpawned = true
+	
+	NeedToBuyWeapons = true
 	
 	Behavior.Randomize()
 	

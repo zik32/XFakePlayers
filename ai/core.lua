@@ -33,6 +33,12 @@ function Frame()
 	PostThink()
 end	
 
-function OnTrigger(A)
-
+function OnTrigger(ATrigger)
+	if ATrigger == "RoundStart" then
+		Spawn()
+	elseif ATrigger == "RoundEnd" then
+		
+	else
+		print("Unknown trigger: " .. ATrigger)
+	end
 end

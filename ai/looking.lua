@@ -17,7 +17,7 @@ end
 function PrimitiveLooking()
 	V = Vec3.New(GetVelocity())
 		
-	if V.Length == 0 then
+	if Vec3Length(V) == 0 then
 		return
 	end
 	
@@ -35,9 +35,9 @@ function ObjectiveLooking()
 	
 	ViewArea = nil
 	
-	for I = 0, NavAreaGetField(Area, NavAreaField.ApproachesCount) - 1 do
+	for I = 0, GetNavAreaApproachesCount(Area) - 1 do
 		for J = #Chain, ChainIndex, -1 do
-			A = NavAreaApproachGetField(Area, I, NavApproachField.Here)
+			A = GetNavAreaApproachHere(Area, I)
 			
 			if A == Chain[J] then
 				ViewArea = A
@@ -58,5 +58,5 @@ function ObjectiveLooking()
 		end
 	end
 
-	LookingPoint = Vec3.New(NavAreaGetField(ViewArea, NavAreaField.Center)) + Vec3.New(0, 0, MyHeight())
+	LookingPoint = Vec3.New(GetNavAreaCenter(ViewArea)) + Vec3.New(0, 0, MyHeight())
 end
