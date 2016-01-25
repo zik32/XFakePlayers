@@ -35,9 +35,7 @@ function ChooseBestWeapon()
 
 	if GetGameDir() == "valve" then
 		ChooseBestWeapon_HL()
-	elseif GetGameDir() == "cstrike" then
-		ChooseBestWeapon_CS()
-	elseif GetGameDir() == "czero" then
+	elseif (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
 		ChooseBestWeapon_CS()
 	end
 end
@@ -87,7 +85,7 @@ function BuyWeapons()
 		return
 	end
 
-	Icon = FindStatusIconByName("buyzone")
+	Icon = FindStatusIconByName("buyzone") -- also, we can using world to find buyzone
 	
 	if Icon == nil then
 		return

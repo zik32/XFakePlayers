@@ -5,9 +5,12 @@
 	ScenarioType = {
 		None = 0,
 		Walking = 1
+		
 	}
 	
+	PreviousScenario = ScenarioType.None
 	Scenario = ScenarioType.None
+	LastScenarioChangeTime = 0
 
 	Area = nil
 	PrevArea = nil
@@ -26,9 +29,9 @@
 	StuckOrigin = {}
 	TryedToUnstuck = false
 	
--- looking
+-- look
 
-	LookingPoint = {}
+	LookPoint = {}
 	
 -- weapons
 
@@ -38,6 +41,7 @@
 	NeedToBuyWeapons = false
 	
 -- attack
+	LastNeedToAttackTime = 0
 	LastAttackTime = 0
 	
 -- common
@@ -71,7 +75,7 @@ function HasChain()
 	if type(Chain) ~= "table" then
 		return false
 	else
-		return(#Chain > 0)
+		return #Chain > 0
 	end
 end
 	
@@ -83,6 +87,35 @@ function SlowDuckJump()
 	DuckJump()
 	
 	SlowJumpTime = Ticks()
+end
+
+function GetScenarioName(AScenario)
+	if AScenario == ScenarioType.None then
+		return "None"
+	elseif AScenario == ScenarioType.Walking then
+		return "Walking"
+	else
+		return "GetScenarioName: unknown scenario " .. AScenario
+	end
+end
+
+function UpdateScenario()
+	Scenario = ScenarioType.Walking
+	
+	if IsEndOfRound then
+		return
+	end
+	
+	LastScenarioChangeTime = Ticks()
+	
+	if PreviousScenario ~= Scenario then
+		print("scenario: " .. GetScenarioName(Scenario))
+	end
+end
+
+function ResetScenario()
+	PreviousScenario = Scenario
+	Scenario = ScenarioType.None
 end
 
 -- weapon utils	
@@ -185,7 +218,7 @@ function GetWeaponMaxClip(AWeapon)
 	elseif GetGameDir() == "valve" then
 		return HLWeapons[GetWeaponIndex(AWeapon)].MaxClip
 	else
-		print "GetWeaponMaxClip(AWeapon) doesnt support this game modification"
+		print "GetWeaponMaxClip(AWeapon) does not support this game modification"
 		return nil
 	end
 end
@@ -196,7 +229,7 @@ function GetWeaponWeight(AWeapon)
 	elseif GetGameDir() == "valve" then
 		return HLWeapons[GetWeaponIndex(AWeapon)].Weight
 	else
-		print "GetWeaponWeight(AWeapon) doesnt support this game modification"
+		print "GetWeaponWeight(AWeapon) does not support this game modification"
 		return nil
 	end	
 end
@@ -258,7 +291,7 @@ end
 function IsEnemy(player_index)
 	if IsTeamPlay() --[[and not FriendlyFire]] then
 		if (GetGameDir() == "tfc") or (GetGameDir() == "dod") then
-			-- dod & tfc not using absolute team names, we need to compare team indexes from entities array
+			-- dod & tfc are not using absolute team names, we need to compare team indexes from entities array
 		
 			T1 = GetEntityTeam(GetClientIndex() + 1)
 			T2 = GetEntityTeam(player_index + 1)

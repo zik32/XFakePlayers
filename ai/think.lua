@@ -5,13 +5,15 @@
 	LastSlowThinkTime = 0
 
 	IsSpawned = false
+	
+	IsEndOfRound = false
 
 -- global constants
 	Idle = false
 
-	SLOWTHINK_PERIOD = 750
+	SLOW_THINK_PERIOD = 750
 	
-	KNIFE_PRIMARY_ATTACK_DISTANCE = HUMAN_HEIGHT_STAND * 2
+	KNIFE_PRIMARY_ATTACK_DISTANCE = HUMAN_WIDTH * 2
 	KNIFE_ALTERNATIVE_ATTACK_DISTANCE = KNIFE_PRIMARY_ATTACK_DISTANCE / 1.5
 	
 	OBJECTIVE_LOOKING_AREA_OFFSET = 2;
@@ -19,7 +21,7 @@
 dofile "ai/utils.lua" 
 
 dofile "ai/movement.lua" 
-dofile "ai/looking.lua" 
+dofile "ai/look.lua" 
 dofile "ai/weapons.lua"
 dofile "ai/attack.lua"
 
@@ -30,7 +32,7 @@ function Think()
 		end
 		
 		Movement()
-		Looking()
+		Look()
 		Weapons()
 		Attack()
 	else
@@ -43,7 +45,7 @@ end
 function PreThink()
 	Origin = Vec3.New(GetOrigin())
 	
-	IsSlowThink = DeltaTicks(LastSlowThinkTime) >= SLOWTHINK_PERIOD
+	IsSlowThink = DeltaTicks(LastSlowThinkTime) >= SLOW_THINK_PERIOD
 
 	if IsSlowThink then
 		LastSlowThinkTime = Ticks()

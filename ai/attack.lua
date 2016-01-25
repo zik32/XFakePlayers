@@ -4,13 +4,10 @@ function Attack()
 		return
 	end
 	
-	--if not AI_InPostReaction(AI_LastNeedToAttackTime, 0.7) then // post reaction including the needattack triger
-	--	Exit;W
-	
 	if not HasEnemiesNear then
 		return
 	end
-	
+
 	if CurrentWeapon == nil then
 		return
 	end
@@ -22,15 +19,23 @@ function Attack()
 	if IsReloading() then
 		return
 	end
-
+	
+	if HasWorld() then
+	
+	else
+		if (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
+		
+		end
+	end
+	
 	LastAttackTime = Ticks()
 	
 	if GetGameDir() == "valve" then
 		Attack_HL()
-	elseif GetGameDir() == "cstrike" then
+	elseif (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
 		Attack_CS()
-	elseif GetGameDir() == "czero" then
-		Attack_CS()
+	elseif GetGameDir() == "hlfx" then
+		Attack_HL()
 	else
 		PrimaryAttack()
 	end

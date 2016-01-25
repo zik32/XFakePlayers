@@ -19,7 +19,7 @@
 	
 		"Frame" - основной метод.
 		
-		"OnTrigger(TriggerType)" - события, которые передаёт движок.
+		"OnTrigger(ATrigger)" - события, которые передаёт движок.
 		
 		Все эти методы должны находиться в 'core.lua' - это единственный вызываемый файл.
 ]]
@@ -382,8 +382,10 @@
 ]]
 
 -- Protocol.pas property
+	HUMAN_HEIGHT = 36
+	HUMAN_HEIGHT_HALF = HUMAN_HEIGHT / 2
 
-	HUMAN_HEIGHT_STAND = 36
+	HUMAN_HEIGHT_STAND = HUMAN_HEIGHT
 	HUMAN_HEIGHT_DUCK = HUMAN_HEIGHT_STAND / 2
 
 	HUMAN_WIDTH = 32

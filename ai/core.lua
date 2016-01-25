@@ -35,9 +35,11 @@ end
 
 function OnTrigger(ATrigger)
 	if ATrigger == "RoundStart" then
+		IsEndOfRound = false
 		Spawn()
 	elseif ATrigger == "RoundEnd" then
-		
+		IsEndOfRound = true
+		ResetScenario()
 	else
 		print("Unknown trigger: " .. ATrigger)
 	end

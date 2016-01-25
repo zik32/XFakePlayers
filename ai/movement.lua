@@ -1,4 +1,8 @@
 function Movement()
+	if IsAttacking() then
+		ResetStuckMonitor()
+	end
+	
 	if Behavior.CrouchWhenShooting and IsAttacking() then
 		Duck()
 	end
@@ -7,7 +11,7 @@ function Movement()
 		return
 	end
 
-	if not Behavior.MoveWhenReloading and IsReloading() then
+	if not Behavior.MoveWhenReloading and IsReloading() and IsAttacking() then
 		return
 	end
 	
@@ -49,10 +53,13 @@ function ObjectiveMovement()
 		Duck()
 	end
 	
-	
-	-- scenario case here
-	
-	ObjectiveWalking()
+	if Scenario == ScenarioType.None then
+		UpdateScenario()
+	elseif Scenario == ScenarioType.Walking then
+		ObjectiveWalking()
+	else
+		print("ObjectiveMovement: unknown scenario " .. Scenario)
+	end
 end
 
 function ResetObjectiveMovement()
@@ -110,7 +117,7 @@ function CheckStuckMonitor()
 	if StuckWarnings >= 3 then
 		if TryedToUnstuck then
 			ResetObjectiveMovement()
-			TryedToUnstuck = false
+			TryedToUnstuck = false 
 		else
 			DuckJump()
 			ResetStuckMonitor()
@@ -193,8 +200,8 @@ function MoveOnChain()
 				else 
 					MoveTo(BestPoint.X, BestPoint.Y, BestPoint.Z)
 					
-					if (not IsNavAreaBiLinked(Area, Next) and (GetNavAreaFlags(Area) & NAV_AREA_NO_JUMP == 0))
-					or (GetNavAreaFlags(Next) & NAV_AREA_JUMP > 0)
+					if ((GetNavAreaFlags(Area) & NAV_AREA_NO_JUMP == 0) and not IsNavAreaBiLinked(Area, Next)) -- to prevent erroneous jumps - we need to add height comparing between two areas
+					or (GetNavAreaFlags(Next) & NAV_AREA_JUMP > 0) -- area must be small for working, add checking for area sizes
 					or (GetNavAreaFlags(Area) & NAV_AREA_JUMP > 0) then
 						SlowDuckJump()
 					end
@@ -222,27 +229,6 @@ function BuildChain(AHintText, ADestinationArea)
 	ResetStuckMonitor()
 	
 	Chain = {GetNavChain(Area, ADestinationArea)}
-	
-	--Chain = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
-	
-	--[[Chain = {
-		GetNavArea(22),
-		GetNavArea(1787),
-		GetNavArea(14),
-		GetNavArea(13),
-		GetNavArea(280),
-		GetNavArea(48),
-		GetNavArea(1809),
-		GetNavArea(93),
-		GetNavArea(228),
-		GetNavArea(15),
-		GetNavArea(43),
-		GetNavArea(2318),
-		GetNavArea(2283),
-		GetNavArea(2284),
-		GetNavArea(283),
-		GetNavArea(29)
-	}]]
 	
 	if HasChain() then
 		ChainFinalPoint = Vec3.New(GetNavAreaCenter(ADestinationArea))
