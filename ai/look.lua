@@ -1,11 +1,16 @@
 
 function Look()
-	if HasEnemiesNear and ((IsReloading() and Behavior.AimWhenReloading) or not IsReloading()) then		
+	if HasEnemiesNear and ((IsReloading() and Behavior.AimWhenReloading) or not IsReloading()) and not Idle then		
 		LookAtEx(NearestEnemy)
 		return
 	end
 	
-	if HasNavigation() then
+	if NeedToDestroy then
+		LookAtEx(BreakablePosition.X, BreakablePosition.Y, BreakablePosition.Z)
+		return
+	end
+	
+	if HasNavigation() and not Idle then
 		ObjectiveLook()
 	else
 		PrimitiveLook()

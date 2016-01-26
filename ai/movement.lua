@@ -3,7 +3,7 @@ function Movement()
 		ResetStuckMonitor()
 	end
 	
-	if Behavior.CrouchWhenShooting and IsAttacking() then
+	if Behavior.CrouchWhenShooting and IsAttacking() and not NeedToDestroy then
 		Duck()
 	end
 	
@@ -15,12 +15,10 @@ function Movement()
 		return
 	end
 	
-	if not Idle then
-		if HasNavigation() then
-			ObjectiveMovement()
-		else
-			PrimitiveMovement()		
-		end
+	if HasNavigation() and not Idle then
+		ObjectiveMovement()
+	else
+		PrimitiveMovement()		
 	end
 		
 	if HasFriendsNear and (GetDistance(NearestFriend) < 50) --[[and IsPlayerPriority(NearestFriend)]] then

@@ -2,11 +2,14 @@
 function Weapons()
 	ReloadCurrentWeapon()
 	ChooseBestWeapon()
-	BuyWeapons()
 end
 
 function ReloadCurrentWeapon()
 	if not IsSlowThink then
+		return
+	end
+	
+	if DeltaTicks(LastAttackTime) < Behavior.ReloadDelay then
 		return
 	end
 	
@@ -32,6 +35,10 @@ function ChooseBestWeapon()
 	if IsReloading() then
 		return
 	end
+	
+	if IsPlantingBomb then
+		return
+	end
 
 	if GetGameDir() == "valve" then
 		ChooseBestWeapon_HL()
@@ -49,7 +56,7 @@ function ChooseBestWeapon_CS()
 	Pistol = FindWeaponBySlot(CS_WEAPON_SLOT_PISTOL)
 	Knife = FindWeaponBySlot(CS_WEAPON_SLOT_KNIFE)
 	
-	if HasEnemiesNear then
+	if HasEnemiesNear or NeedToDestroy then
 		if CanUseWeapon(Rifle, true) then
 			ChooseWeapon(Rifle)
 		elseif CanUseWeapon(Pistol, true) then
@@ -61,41 +68,15 @@ function ChooseBestWeapon_CS()
 		else
 			ChooseWeapon(Knife)
 		end
-	else
-		if CanUseWeapon(Rifle, false) and NeedReloadWeapon(Rifle) and CanReload() then
-			ChooseWeapon(Rifle)
-		elseif CanUseWeapon(Pistol, false) and NeedReloadWeapon(Pistol) and CanReload() then
-			ChooseWeapon(Pistol)
-		else
-			ChooseWeapon(Knife)
+	else 
+		if DeltaTicks(LastAttackTime) > Behavior.ReloadDelay then
+			if CanUseWeapon(Rifle, false) and NeedReloadWeapon(Rifle) and CanReload() then
+				ChooseWeapon(Rifle)
+			elseif CanUseWeapon(Pistol, false) and NeedReloadWeapon(Pistol) and CanReload() then
+				ChooseWeapon(Pistol)
+			else
+				ChooseWeapon(Knife)
+			end
 		end
 	end
-end
-
-function BuyWeapons()
-	if not NeedToBuyWeapons then
-		return
-	end
-	
-	if (GetGameDir() ~= "cstrike") and (GetGameDir() ~= "czero") then
-		return
-	end
-	
-	if not IsSlowThink then
-		return
-	end
-
-	Icon = FindStatusIconByName("buyzone") -- also, we can using world to find buyzone
-	
-	if Icon == nil then
-		return
-	end
-	
-	if GetStatusIconStatus(Icon) == 0 then
-		return
-	end
-	
-	ExecuteCommand("autobuy")
-	
-	NeedToBuyWeapons = false
 end

@@ -1,5 +1,12 @@
 -- ai core file
 
+--[[
+	TODO:
+	- [DONE] destroy all visible breakables
+	- add bomb planting & defusing
+	- add task for changing health and battery in hl, opfor, etc..
+]]
+
 dofile "ai/vector.lua" 
 dofile "ai/shared.lua"
 dofile "ai/protocol.lua"  -- see this file to get help

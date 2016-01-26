@@ -6,19 +6,43 @@ function Vec3.New(X, Y, Z)
 end
 
 function Vec3.__add(A, B)
-	return Vec3.New(A.X + B.X, A.Y + B.Y, A.Z + B.Z)
+	if type(A) == "number" then
+		return Vec3.New(A + B.X, A + B.Y, A + B.Z)
+	elseif type(B) == "number" then
+		return Vec3.New(A.X + B, A.Y + B, A.Z + B)
+	else
+		return Vec3.New(A.X + B.X, A.Y + B.Y, A.Z + B.Z)
+	end
 end
 
 function Vec3.__sub(A, B)
-	return Vec3.New(A.X - B.X, A.Y - B.Y, A.Z - B.Z)
+	if type(A) == "number" then
+		return Vec3.New(A - B.X, A - B.Y, A - B.Z)
+	elseif type(B) == "number" then
+		return Vec3.New(A.X - B, A.Y - B, A.Z - B)
+	else
+		return Vec3.New(A.X - B.X, A.Y - B.Y, A.Z - B.Z)
+	end
 end
 
 function Vec3.__mul(A, B)
-	return Vec3.New(A.X * B.X, A.Y * B.Y, A.Z * B.Z)
+	if type(A) == "number" then
+		return Vec3.New(A * B.X, A * B.Y, A * B.Z)
+	elseif type(B) == "number" then
+		return Vec3.New(A.X * B, A.Y * B, A.Z * B)
+	else
+		return Vec3.New(A.X * B.X, A.Y * B.Y, A.Z * B.Z)
+	end
 end
 
 function Vec3.__div(A, B)
-	return Vec3.New(A.X / B.X, A.Y / B.Y, A.Z / B.Z)
+	if type(A) == "number" then
+		return Vec3.New(A / B.X, A / B.Y, A / B.Z)
+	elseif type(B) == "number" then
+		return Vec3.New(A.X / B, A.Y / B, A.Z / B)
+	else
+		return Vec3.New(A.X / B.X, A.Y / B.Y, A.Z / B.Z)
+	end
 end
 
 function Vec3DotProduct(A, B)
@@ -41,19 +65,43 @@ function Vec2.New(X, Y)
 end
 
 function Vec2.__add(A, B)
-	return Vec2.New(A.X + B.X, A.Y + B.Y)
+	if type(A) == "number" then
+		return Vec2.New(A + B.X, A + B.Y)
+	elseif type(B) == "number" then
+		return Vec2.New(A.X + B, A.Y + B)
+	else
+		return Vec2.New(A.X + B.X, A.Y + B.Y)
+	end
 end
 
 function Vec2.__sub(A, B)
-	return Vec2.New(A.X - B.X, A.Y - B.Y)
+	if type(A) == "number" then
+		return Vec2.New(A - B.X, A - B.Y)
+	elseif type(B) == "number" then
+		return Vec2.New(B.X - A, B.Y - A)
+	else
+		return Vec2.New(A.X - B.X, A.Y - B.Y)
+	end
 end
 
 function Vec2.__mul(A, B)
-	return Vec2.New(A.X * B.X, A.Y * B.Y)
+	if type(A) == "number" then
+		return Vec2.New(A * B.X, A * B.Y)
+	elseif type(B) == "number" then
+		return Vec2.New(A.X * B, A.Y * B)
+	else
+		return Vec2.New(A.X * B.X, A.Y * B.Y)
+	end
 end
 
 function Vec2.__div(A, B)
-	return Vec2.New(A.X / B.X, A.Y / B.Y)
+	if type(A) == "number" then
+		return Vec2.New(A / B.X, A / B.Y)
+	elseif type(B) == "number" then
+		return Vec2.New(A.X / B, A.Y / B)
+	else
+		return Vec2.New(A.X / B.X, A.Y / B.Y)
+	end
 end
 
 function Vec2Length(V)
@@ -73,6 +121,12 @@ end
 
 function Vec3Line.__tostring(A)
 	return("Hi: [X: " .. A.HiX .. ", Y: " .. A.HiY .. ", Z: " .. A.HiZ .. "], Lo [X: " .. A.LoX .. ", Y: " .. A.LoY .. ", Z: " .. A.LoZ .. "]") 
+end
+
+function Vec3LineCenter(A)
+	Lo = Vec3.New(A.LoX, A.LoY, A.LoZ)
+	Hi = Vec3.New(A.HiX, A.HiY, A.HiZ)
+	return (Lo + Hi) / 2
 end
 
 Vec2Line = {}
@@ -100,19 +154,3 @@ function IsVecLinesIntersectedIn2D(A, B)
 
 	return ((F1 * F2 < 0) and (F3 * F4 < 0))	
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

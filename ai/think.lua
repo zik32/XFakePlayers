@@ -11,7 +11,7 @@
 -- global constants
 	Idle = false
 
-	SLOW_THINK_PERIOD = 750
+	SLOW_THINK_PERIOD = 1000
 	
 	KNIFE_PRIMARY_ATTACK_DISTANCE = HUMAN_WIDTH * 2
 	KNIFE_ALTERNATIVE_ATTACK_DISTANCE = KNIFE_PRIMARY_ATTACK_DISTANCE / 1.5
@@ -24,6 +24,7 @@ dofile "ai/movement.lua"
 dofile "ai/look.lua" 
 dofile "ai/weapons.lua"
 dofile "ai/attack.lua"
+dofile "ai/tasks.lua"
 
 function Think()
 	if IsAlive() then
@@ -35,6 +36,7 @@ function Think()
 		Look()
 		Weapons()
 		Attack()
+		Tasks()
 	else
 		if IsSpawned then
 			Die()
@@ -60,7 +62,9 @@ function PreThink()
 end
 
 function PostThink()
-
+	-- decrease recoil
+	V = Vec3.New(GetViewAngles()) - Vec3.New(GetPunchAngle())
+	SetViewAngles(V.X, V.Y, V.Z)
 end
 
 function Spawn()

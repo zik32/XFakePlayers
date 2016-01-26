@@ -1,5 +1,10 @@
 
 function Attack()
+	if NeedToDestroy then
+		AttackEx()
+		return
+	end
+	
 	if Idle then
 		return
 	end
@@ -28,6 +33,10 @@ function Attack()
 		end
 	end
 	
+	AttackEx()
+end
+
+function AttackEx() -- fuck this 
 	LastAttackTime = Ticks()
 	
 	if GetGameDir() == "valve" then
@@ -60,6 +69,10 @@ function Attack_CS()
 end
 
 function KnifeAttack(CanAlternativeAttack)
+	if not HasEnemiesNear then
+		return
+	end
+	
 	MoveTo(NearestEnemy)
 	
 	if CanAlternativeAttack and Behavior.AlternativeKnifeAttack then

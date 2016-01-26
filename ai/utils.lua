@@ -41,7 +41,6 @@
 	NeedToBuyWeapons = false
 	
 -- attack
-	LastNeedToAttackTime = 0
 	LastAttackTime = 0
 	
 -- common
@@ -50,7 +49,10 @@
 		CrouchWhenShooting = false,
 		MoveWhenReloading = true,
 		AimWhenReloading = true,
-		AlternativeKnifeAttack = false
+		AlternativeKnifeAttack = false,
+		ReloadDelay = 0,
+		DuckWhenPlantingBomb = false,
+		DuckWhenDefusingBomb = false
 		
 	}
 
@@ -68,6 +70,13 @@
 	NearestLeaderPlayer = nil
 	PlayersNearCount = 0
 	HasPlayersNear = false
+	
+-- tasks
+	IsPlantingBomb = false
+	IsDefusingBomb = false
+
+	NeedToDestroy = false
+	BreakablePosition = {}
 
 -- movement utils
 
@@ -109,7 +118,7 @@ function UpdateScenario()
 	LastScenarioChangeTime = Ticks()
 	
 	if PreviousScenario ~= Scenario then
-		print("scenario: " .. GetScenarioName(Scenario))
+		print("scenario: " .. string.lower(GetScenarioName(Scenario)))
 	end
 end
 
@@ -271,13 +280,14 @@ end
 -- common utils
 
 function Behavior.Randomize()
-	if (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
-		Behavior.MoveWhenShooting = Chance(50)
-		Behavior.CrouchWhenShooting = Chance(50)
-		Behavior.MoveWhenReloading = Chance(50)
-		Behavior.AimWhenReloading = Chance(50)
-		Behavior.AlternativeKnifeAttack = Chance(50)
-	end
+	Behavior.MoveWhenShooting = Chance(50)
+	Behavior.CrouchWhenShooting = Chance(50)
+	Behavior.MoveWhenReloading = Chance(50)
+	Behavior.AimWhenReloading = Chance(50)
+	Behavior.AlternativeKnifeAttack = Chance(50)
+	Behavior.ReloadDelay = math.random(1000, 10000)
+	Behavior.DuckWhenPlantingBomb = Chance(50)
+	Behavior.DuckWhenDefusingBomb = Chance(50)
 end
 
 function MyHeight()
@@ -401,4 +411,32 @@ function FindStatusIconByName(AName)
 	end
 		
 	return nil
+end
+
+function FindResourceModelByIndex(AIndex)
+	for I = 0, GetResourcesCount() - 1 do
+		if GetResourceType(I) == RT_MODEL then
+			if GetResourceIndex(I) == AIndex then
+				return I
+			end
+		end
+	end
+	
+	return -1
+end
+
+function FindActiveEntityByModelName(AModelName)
+	for I = 0, GetEntitiesCount() - 1 do
+		if IsEntityActive(I) then
+			R = FindResourceModelByIndex(GetEntityModelIndex(I))
+			
+			if R ~= -1 then
+				if string.sub(GetResourceName(R), 1, string.len(AModelName)) == AModelName then
+					return I
+				end
+			end
+		end
+	end
+	
+	return -1
 end

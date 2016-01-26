@@ -1,37 +1,20 @@
 --[[
-	ќсновное описание протокола XFakePlayers AI.
+	XFakePlayers AI
 	
-		XFakePlayers AI предлагает высокоуровневое использование основных механик 
-	игры с помощью встраиваемого €зыка Lua. “аким образом, это первый в своЄм 
-	роде внешний AI дл€ Half-Life и его модов (включа€ Counter-Strike).
+		Initialization()
 	
-		ƒвижок проектировалс€ таким образом, чтобы любой пользователь мог вносить
-	правки в код, заставл€€ AI работать так, как ему этого хочетс€.
+		Finalization()
+	
+		Frame()
 		
-	»спользуемые методы из основного модул€:
-	
-		"Initialization" - вызываетс€ из CL_InitializeLua (XPlayableClient) на 
-	старте игровой сессии, может содержать любой кастомный код (а может и не содержать), 
-	использовать дл€ инициализации глобальных переменных.
-	
-		"Finalization" - аналогична предыдущему методу, но вызываетс€ при завершении 
-	игровой сессии (CL_FinalizeConnection, dropclient, disconnect, etc..), использовать по усмотрению.
-	
-		"Frame" - основной метод.
-		
-		"OnTrigger(ATrigger)" - событи€, которые передаЄт движок.
-		
-		¬се эти методы должны находитьс€ в 'core.lua' - это единственный вызываемый файл.
-]]
--- XNativeEngine.pas property
+		OnTrigger(ATrigger)()
 
---[[
-	ExecuteCommand(command: string)
-	
-]]
--- XBaseGameClient.pas property
 
---[[
+-- available methods:
+
+	ExecuteCommand(command: str)
+		executes command on client
+	
 	GetServer(): str
 		server address as text string
 
@@ -71,6 +54,9 @@
 		
 	LookAt(pos: float[3])
 	LookAt(ent: int)
+	
+	GetViewAngles(): float[3]
+	SetViewAngles(angles: float[3])
 		
 	LookAtEx(pos: float[3]) 
 	LookAtEx(ent: int) 
@@ -79,26 +65,6 @@
 	PressButton(Button)
 	UnPressButton(Button)
 	IsButtonPressed(Button): bool
-]]
-	Button = {
-		ATTACK = 1 << 0,
-		JUMP = 1 << 1,
-		DUCK = 1 << 2,
-		FORWARD = 1 << 3,
-		BACK = 1 << 4,
-		USE = 1 << 5,
-		CANCEL = 1 << 6,
-		LEFT = 1 << 7,
-		RIGHT = 1 << 8,
-		MOVELEFT = 1 << 9,
-		MOVERIGHT = 1 << 10,
-		ATTACK2 = 1 << 11,
-		RUN = 1 << 12,
-		RELOAD = 1 << 13,
-		ALT1 = 1 << 14,
-		SCORE = 1 << 15
-	}
---[[
 		
 	GetOrigin(): float[3]
 	
@@ -129,7 +95,7 @@
 		get field from weapondata_t array for specific weapon
 		
 ]]
-	WeaponDataField = {
+	WeaponDataField = {  -- TODO: delete this shit. really.
 		ID = 1, -- int
 		Clip = 2, -- int
 		NextPrimaryAttack = 3, -- float
@@ -182,6 +148,18 @@
 		equivalent for PressButton(DUCK)
 		
 	DuckJump()	
+		
+    GetResourcesCount(): int
+    
+	GetResourceName(index: int): str
+    
+	GetResourceType(index: int): int
+    
+	GetResourceIndex(index: int): int
+    
+	GetResourceSize(index: int): int
+    
+	GetResourceFlags(index: int): int
 		
 	GetPlayersCount(): int
 		length of players array
@@ -237,12 +215,127 @@
 	GetEntitiesCount(): int
 		length of entities array
 		
-	IsEntityActive(ent_index): bool
+    GetEntityType(index: int): int
+    
+	GetEntityNumber(index: int): int
+    
+	GetEntityMsgTime(index: int): float
+    
+	GetEntityMessageNum(index: int): int
+    
+	GetEntityOrigin(index: int): float[3]
+    
+	GetEntityAngles(index: int): float[3]
+    
+	GetEntityModelIndex(index: int): int
+    
+	GetEntitySequence(index: int): int
+    
+	GetEntityFrame(index: int): float
+    
+	GetEntityColorMap(index: int): int
+    
+	GetEntitySkin(index: int): int
+    
+	GetEntitySolid(index: int): int
+    
+	GetEntityEffects(index: int): int
+    
+	GetEntityScale(index: int): int
+    
+	GetEntityEFlags(index: int): int
+    
+	GetEntityRenderMode(index: int): int
+    
+	GetEntityRenderAmt(index: int): int
+    
+	GetEntityRenderFX(index: int): int
+    
+	GetEntityMoveType(index: int): int
+    
+	GetEntityAnimTime(index: int): float
+    
+	GetEntityFrameRate(index: int): float
+    
+	GetEntityBody(index: int): int
+    
+	GetEntityVelocity(index: int): float[3]
+    
+	GetEntityMinS(index: int): int
+    
+	GetEntityMaxS(index: int): int
+    
+	GetEntityAimEnt(index: int): int
+    
+	GetEntityOwner(index: int): int
+    
+	GetEntityFriction(index: int): float
+    
+	GetEntityGravity(index: int): float
+    
+	GetEntityTeam(index: int): int
+    
+	GetEntityPlayerClass(index: int): int
+    
+	GetEntityHealth(index: int): int
+    
+	GetEntitySpectator(index: int): int
+    
+	GetEntityWeaponModel(index: int): int
+    
+	GetEntityGaitSequence(index: int): int
+    
+	GetEntityBaseVelocity(index: int): float[3]
+    
+	GetEntityUseHull(index: int): int
+    
+	GetEntityOldButtons(index: int): int
+    
+	GetEntityOnGround(index: int): int
+    
+	GetEntityStepLeft(index: int): int
+    
+	GetEntityFallVelocity(index: int): float
+    
+	GetEntityFOV(index: int): int
+    
+	GetEntityWeaponAnim(index: int): int
+    
+	GetEntityStartPos(index: int): float[3]
+    
+	GetEntityEndPos(index: int): float[3]
+    
+	GetEntityImpactTime(index: int): float
+    
+	GetEntityStartTime(index: int): float
+    
+	GetEntityIUser1(index: int): int
+    
+	GetEntityIUser2(index: int): int
+    
+	GetEntityIUser3(index: int): int
+    
+	GetEntityIUser4(index: int): int
+    
+	GetEntityFUser1(index: int): int
+    
+	GetEntityFUser2(index: int): int
+    
+	GetEntityFUser3(index: int): int
+    
+	GetEntityFUser4(index: int): int
+    
+	GetEntityVUser1(index: int): float[3]
+    
+	GetEntityVUser2(index: int): float[3]
+    
+	GetEntityVUser3(index: int): float[3]
+    
+	GetEntityVUser4(index: int): float[3]
+    
+	IsEntityActive(index: int): int
 		is entity currenrly spawned for actor
-		
-	GetEntityTeam(ent_index): int
-		entitystate_t.team
-		
+			
 	GetGroundedOrigin(): float[3]
 		equivalent for GetOrigin with subtracted human height
 	
@@ -250,11 +343,6 @@
 	GetGroundedDistance(ent: int): float
 		see below
 
-]]
-
--- XSimpleGameClient.pas property
-
---[[
 	GetHealth(): int
 		Health gmsg event
 		
@@ -300,11 +388,7 @@
 		
 	GetAmmo(weapon: int): int
 		ammox gmsg event
-]]
 
--- XPlayableClient.pas property
-
---[[
 	HasNavigation(): bool
 		is navigation (*.nav) file loaded
 		
@@ -378,7 +462,46 @@
 
 	GetNavChain(area1, area2): array of int
 		
+    GetWorldEntitiesCount(): int
+    
+	GetWorldVertexesCount(): int
+    
+	GetWorldEdgesCount(): int
+    
+	GetWorldSurfEdgesCount(): int
+    
+	GetWorldTexturesCount(): int
+    
+	GetWorldPlanesCount(): int
+    
+	GetWorldFacesCount(): int
+    
+	GetWorldLeafsCount(): int
+    
+	GetWorldNodesCount(): int
+    
+	GetWorldClipNodesCount(): int
+    
+	GetWorldModelsCount(): int
+	
+	GetWorldEntity(field, value: str): int
+		find entity absolute index in bsp (returns -1 if not found)
+		
+	GetWorldEntityField(index: int, field: str): str
+		returns empty string if field does not exist
 
+    GetWorldModelMinS(index: int): float[3]
+    
+	GetWorldModelMaxS(index: int): float[3]
+    
+	GetWorldModelOrigin(index: int): float[3]
+    
+	GetWorldModelVisLeafs(index: int): int
+    
+	GetWorldModelFirstFace(index: int): int
+    
+	GetWorldModelNumFaces(index: int): int
+		
 ]]
 
 -- Protocol.pas property
@@ -392,11 +515,49 @@
 	HUMAN_WIDTH_HALF = HUMAN_WIDTH / 2
 
 	MAX_UNITS = 8192
+
+	Button = {
+		ATTACK = 1 << 0,
+		JUMP = 1 << 1,
+		DUCK = 1 << 2,
+		FORWARD = 1 << 3,
+		BACK = 1 << 4,
+		USE = 1 << 5,
+		CANCEL = 1 << 6,
+		LEFT = 1 << 7,
+		RIGHT = 1 << 8,
+		MOVELEFT = 1 << 9,
+		MOVERIGHT = 1 << 10,
+		ATTACK2 = 1 << 11,
+		RUN = 1 << 12,
+		RELOAD = 1 << 13,
+		ALT1 = 1 << 14,
+		SCORE = 1 << 15
+	}
 	
 -- Weapon.pas property
 
 	MAX_WEAPONS = 32
 	WEAPON_NOCLIP = -1
+	
+-- Resource.pas property
+
+	RT_SOUND = 0
+	RT_SKIN = 1
+	RT_MODEL = 2
+	RT_DECAL = 3
+	RT_GENERIC = 4
+	RT_EVENTSCRIPT = 5
+	RT_WORLD = 6
+
+	RES_FATALIFMISSING = 1 << 0
+	RES_WASMISSING = 1 << 1
+	RES_CUSTOM = 1 << 2
+	RES_REQUESTED = 1 << 3
+	RES_PRECACHED = 1 << 4
+	RES_ALWAYS = 1 << 5
+	RES_PADDING = 1 << 6
+	RES_CHECKFILE = 1 << 7
 
 -- Half-Life
 
@@ -743,3 +904,12 @@
 	NAV_AREA_HAS_ELEVATOR = 1 << 30 -- area is in an elevator's path
 	NAV_AREA_NAV_BLOCKER = 1 << 31 -- area is blocked by nav blocker ( Alas, needed to hijack a bit in the attributes to get within a cache line [7/24/2008 tom])
 	
+-- World
+
+	SF_BREAKABLE_ONLY_TRIGGER = 1 << 0 -- If set, this func_breakable will only break when triggered, even if its health value is set to '1'.
+	SF_BREAKABLE_TOUCH = 1 << 1 -- If set, this func_breakable will break as soon as a player touches it. If a delay before fire is set, the func_breakable will wait for that to run out before breaking after a touch.
+	SF_BREAKABLE_PRESSURE = 1 << 2 -- If set, the func_breakable can be destroyed from pressure, as is e.g. inflicted by a func_train, regardless of the train's damage.
+	SF_BREAKABLE_REPAIRABLE = 1 << 3 -- If set, this func_breakable can be repaired, as in, have its health restored, by a player 'attacking' it with weapon_pipewrenches' primary attack, for the amount of that weapon's primary damage value.
+	SF_BREAKABLE_SHOW_HUD_INFO = 1 << 4 -- If set, the func_breakable will show HUD info for players looking at it. This is not affected by CVar 'mp_allowmonsterinfo'.
+	SF_BREAKABLE_INSTANT_BREAK = 1 << 8 -- 256 If set, this func_breakable will break instantly if hit with a crowbar.
+	SF_BREAKABLE_EXPLOSIVES_ONLY = 1 << 9 -- If set, this func_breakable can be damaged by explosives only.
