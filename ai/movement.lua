@@ -15,13 +15,21 @@ function Movement()
 		return
 	end
 	
+	if IsPlantingBomb then
+		return
+	end
+	
+	if IsDefusingBomb then
+		return
+	end
+	
 	if HasNavigation() and not Idle then
 		ObjectiveMovement()
 	else
 		PrimitiveMovement()		
 	end
 		
-	if HasFriendsNear and (GetDistance(NearestFriend) < 50) --[[and IsPlayerPriority(NearestFriend)]] then
+	if HasFriendsNear and (GetDistance(NearestFriend) < 50) then
 		MoveOut(NearestFriend)
 	end
 end
@@ -55,6 +63,8 @@ function ObjectiveMovement()
 		UpdateScenario()
 	elseif Scenario == ScenarioType.Walking then
 		ObjectiveWalking()
+	elseif Scenario == ScenarioType.PlantingBomb then
+		ObjectivePlantingBomb()
 	else
 		print("ObjectiveMovement: unknown scenario " .. Scenario)
 	end
@@ -222,7 +232,7 @@ function MoveOnChain()
 	return true
 end
 
-function BuildChain(AHintText, ADestinationArea)
+function BuildChain(ADestinationArea)
 	ResetObjectiveMovement()
 	ResetStuckMonitor()
 	
@@ -230,7 +240,15 @@ function BuildChain(AHintText, ADestinationArea)
 	
 	if HasChain() then
 		ChainFinalPoint = Vec3.New(GetNavAreaCenter(ADestinationArea))
-		print(AHintText .. GetNavAreaName(ADestinationArea))
+		return true
+	else
+		return false
+	end
+end
+
+function BuildChainEx(AHintText, ADestinationArea)
+	if BuildChain(ADestinationArea) then
+		print(AHintText .. " " .. GetNavAreaName(ADestinationArea))
 		
 		return true
 	else
@@ -240,6 +258,53 @@ end
 
 function ObjectiveWalking()
 	if not MoveOnChain() then
-		BuildChain("walking to ", GetRandomNavArea())
+		BuildChainEx("walking to", GetRandomNavArea())
+	end
+end
+
+function ObjectivePlantingBomb()
+	if not IsWeaponExists(CS_WEAPON_C4) then
+		ResetScenario()
+		return
+	end
+	
+	if IsAreaChanged then
+	--	AI_Area.Flags := AI_Area.Flags or NAV_AREA_PLANTER_MARK;
+	end
+
+	if not MoveOnChain() and IsSlowThink then
+		if HasWorld() then
+			E = GetWorldRandomEntityByClassName("func_bomb_target")
+
+			if E == -1 then
+				--do nav searching
+				return
+			end
+
+			M = GetModelForEntity(E)
+			
+			if M == -1 then
+				-- do nav searching
+				return
+			end
+			
+			C = GetModelGabaritesCenter(M)
+			
+			BuildChainEx("walking to bomb place at", GetNavArea(C.X, C.Y, C.Z))
+		else
+			-- TODO: 
+			-- we can find bomb places by navigation map:
+			
+			-- - we can randomly walk on every new nav area
+			-- and finally reach bomb place (and remember this area)
+			
+			-- - we can use the nav place names list
+			-- and find bomb place by BombplaceA, BombplaceB, BombplaceC fields (also remember it to some array)
+			
+			-- it is not 100% searching method to find bomb place
+			-- but it can work without *.bsp
+			
+			ResetScenario()
+		end
 	end
 end

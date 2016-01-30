@@ -1,13 +1,15 @@
 --[[
 	XFakePlayers AI
 	
+	Forced methods from engine:
+	
 		Initialization()
 	
 		Finalization()
 	
 		Frame()
 		
-		OnTrigger(ATrigger)()
+		OnTrigger(ATrigger)
 
 
 -- available methods:
@@ -80,8 +82,8 @@
 		
 	GetDistance2D(pos\ent: float[3]\int): float
 	
-	IsWeaponExists(weapon): bool
-		?
+	IsWeaponExists(absolute_weapon_index: int): bool
+		this using absolute index, not weaponlist index
 	
 	IsCrouching(): bool
 
@@ -401,8 +403,6 @@
 	IsVisible(pos: float[3]): bool
 	IsVisible(ent: int): bool
 		checks visibility of object (or point) from actor's eyes
-		
-	GetVisiblePlayerPart(player_index: int): float[3]
 	
 	GetNavArea(): int
 		search and return absolute nav area index by actor's origin
@@ -485,11 +485,33 @@
 	GetWorldModelsCount(): int
 	
 	GetWorldEntity(field, value: str): int
-		find entity absolute index in bsp (returns -1 if not found)
+		return entity absolute index in world with given field and value
+		return -1 if not found
+		
+    GetWorldEntities(field, value: str): int
+		returns an array of absolute indexes of entities in world with given field and value
+		
+	GetWorldRandomEntity(field, value: str): int
+		working like GetWorldEntities(.., ..)[Random(Length(GetWorldEntities(.., ..)))]
+		
+    GetWorldEntityByClassName(classname: str): int
+		equivalent for GetWorldEntity("classname", ...)
+    
+	GetWorldEntitiesByClassName(classname: str): int
+		equivalent for GetWorldEntities("classname", ...)
+    
+	GetWorldRandomEntityByClassName(classname: str): int
+		equivalent for GetWorldRandomEntity("classname", ...)		
 		
 	GetWorldEntityField(index: int, field: str): str
+		returns a string data under the field
 		returns empty string if field does not exist
 
+	GetModelForEntity(index: int): int	
+		returns absolute world model index from world models array for model, 
+		who allocated with given entity.
+		returns -1 if entity does not have model or model was not found
+		
     GetWorldModelMinS(index: int): float[3]
     
 	GetWorldModelMaxS(index: int): float[3]
@@ -558,6 +580,8 @@
 	RES_ALWAYS = 1 << 5
 	RES_PADDING = 1 << 6
 	RES_CHECKFILE = 1 << 7
+
+-- Weapon.pas property
 
 -- Half-Life
 

@@ -4,6 +4,11 @@ function Tasks()
 	PlantBomb()
 	DefuseBomb()
 	DestroyBreakables() 
+	
+	-- TODO: add health & armor recharging stations using in HL
+	-- TODO: add hostages using in CS, CZ
+	
+	
 end
 
 function BuyWeapons()
@@ -25,7 +30,7 @@ function BuyWeapons()
 		return
 	end
 	
-	if GetStatusIconStatus(Icon) == 0 then
+	if GetStatusIconStatus(Icon) == 0 then -- byuzone icon is not on screen
 		return
 	end
 	
@@ -51,7 +56,7 @@ function PlantBomb()
 		return
 	end
 	
-	if GetStatusIconStatus(Icon) ~= 2 then
+	if GetStatusIconStatus(Icon) ~= 2 then -- c4 icon is not flashing
 		return
 	end
 
@@ -64,7 +69,7 @@ function PlantBomb()
 	if GetWeaponAbsoluteIndex() ~= CS_WEAPON_C4 then
 		ChooseWeapon(GetWeaponByAbsoluteIndex(CS_WEAPON_C4))
 	else
-		PrimaryAttack() -- planting
+		PrimaryAttack() 
 	end
 end
 
@@ -85,7 +90,7 @@ function DefuseBomb()
 	
 	Entity = FindActiveEntityByModelName("models/w_c4")
 	
-	if Entity == -1 then
+	if Entity == nil then
 		return
 	end
 	
@@ -117,6 +122,8 @@ function DestroyBreakables()
 		return
 	end
 	
+	-- TODO: we need to destroy objects only when this objects prevent our path
+	
 	NeedToDestroy = false
 	
 	Distance = MAX_UNITS
@@ -125,24 +132,26 @@ function DestroyBreakables()
 		if IsEntityActive(I) then
 			R = FindResourceModelByIndex(GetEntityModelIndex(I))
 			
-			if R ~= -1 then
+			if R ~= nil then
 				S = GetResourceName(R)
 				
 				if string.sub(S, 1, 1) == "*" then
 					E = GetWorldEntity("model", GetResourceName(R))
 				
-					if E ~= -1 then
+					if E ~= nil then
 						if GetWorldEntityField(E, "classname") == "func_breakable" then 
 							if GetWorldEntityField(E, "spawnflags") == "" then -- TODO: add extended flag checking 
+								
+								-- TODO: add entity health checking here
+								-- 		 try to break only if health less or equals 200
+								
 								J = tonumber(string.sub(S, 2))
 								
-								MinS = Vec3.New(GetWorldModelMinS(J))
-								MaxS = Vec3.New(GetWorldModelMaxS(J))
-								
-								D = Vec3Line.New(MinS.X, MinS.Y, MinS.Z, MaxS.X, MaxS.Y, MaxS.Z)
-								C = Vec3LineCenter(D)
+								C = GetModelGabaritesCenter(J)
 								
 								-- TODO: add explosion radius checking here
+								
+								-- TODO: add Behavior.DestroyExplosions
 								
 								if (GetDistance(C.X, C.Y, C.Z) < Distance) and IsVisible(C.X, C.Y, C.Z) then
 									BreakablePosition = C

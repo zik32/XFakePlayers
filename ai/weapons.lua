@@ -1,11 +1,15 @@
 
 function Weapons()
-	ReloadCurrentWeapon()
+	ReloadWeapon()
 	ChooseBestWeapon()
 end
 
-function ReloadCurrentWeapon()
+function ReloadWeapon()
 	if not IsSlowThink then
+		return
+	end
+	
+	if IsAttacking() then
 		return
 	end
 	
@@ -21,8 +25,9 @@ function ReloadCurrentWeapon()
 		return
 	end
 
-	--if AI_DefusingBomb then
-	--Exit;
+	if IsDefusingBomb then
+		return
+	end
 
 	if IsReloading() then
 		return

@@ -1,82 +1,3 @@
--- movement
-	SLOW_JUMP_PERIOD = 1000
-	SlowJumpTime = 0
-	
-	ScenarioType = {
-		None = 0,
-		Walking = 1
-		
-	}
-	
-	PreviousScenario = ScenarioType.None
-	Scenario = ScenarioType.None
-	LastScenarioChangeTime = 0
-
-	Area = nil
-	PrevArea = nil
-	IsAreaChanged = false
-	
-	Chain = {}
-	ChainIndex = 0
-	ChainFinalPoint = {}
-	
-	STUCK_CHECK_PERIOD = 500
-	LastStuckMonitorTime = 0
-	
-	LastStuckCheckTime = 0
-	StuckWarnings = 0
-	UnstuckWarnings = 0
-	StuckOrigin = {}
-	TryedToUnstuck = false
-	
--- look
-
-	LookPoint = {}
-	
--- weapons
-
-	CurrentWeapon = nil
-	LastKnownWeapon = nil -- only for hint
-	
-	NeedToBuyWeapons = false
-	
--- attack
-	LastAttackTime = 0
-	
--- common
-	Behavior = {
-		MoveWhenShooting = true,
-		CrouchWhenShooting = false,
-		MoveWhenReloading = true,
-		AimWhenReloading = true,
-		AlternativeKnifeAttack = false,
-		ReloadDelay = 0,
-		DuckWhenPlantingBomb = false,
-		DuckWhenDefusingBomb = false
-		
-	}
-
-    NearestEnemy = nil
-    NearestLeaderEnemy = nil
-    EnemiesNearCount = 0
-    HasEnemiesNear = false
-
-    NearestFriend = nil
-    NearestLeaderFriend = nil
-    FriendsNearCount = 0
-    HasFriendsNear = false
-	
-	NearestPlayer = nil
-	NearestLeaderPlayer = nil
-	PlayersNearCount = 0
-	HasPlayersNear = false
-	
--- tasks
-	IsPlantingBomb = false
-	IsDefusingBomb = false
-
-	NeedToDestroy = false
-	BreakablePosition = {}
 
 -- movement utils
 
@@ -93,6 +14,10 @@ function SlowDuckJump()
 		return
 	end
 	
+	if not IsOnGround() then
+		return
+	end
+	
 	DuckJump()
 	
 	SlowJumpTime = Ticks()
@@ -103,6 +28,8 @@ function GetScenarioName(AScenario)
 		return "None"
 	elseif AScenario == ScenarioType.Walking then
 		return "Walking"
+	elseif AScenario == ScenarioType.PlantingBomb then
+		return "Planting Bomb"
 	else
 		return "GetScenarioName: unknown scenario " .. AScenario
 	end
@@ -116,6 +43,13 @@ function UpdateScenario()
 	end
 	
 	LastScenarioChangeTime = Ticks()
+	
+	if (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
+		if IsWeaponExists(CS_WEAPON_C4) then
+			Scenario = ScenarioType.PlantingBomb
+		end
+	end
+
 	
 	if PreviousScenario ~= Scenario then
 		print("scenario: " .. string.lower(GetScenarioName(Scenario)))
@@ -422,7 +356,7 @@ function FindResourceModelByIndex(AIndex)
 		end
 	end
 	
-	return -1
+	return nil
 end
 
 function FindActiveEntityByModelName(AModelName)
@@ -430,7 +364,7 @@ function FindActiveEntityByModelName(AModelName)
 		if IsEntityActive(I) then
 			R = FindResourceModelByIndex(GetEntityModelIndex(I))
 			
-			if R ~= -1 then
+			if R ~= nil then
 				if string.sub(GetResourceName(R), 1, string.len(AModelName)) == AModelName then
 					return I
 				end
@@ -438,5 +372,14 @@ function FindActiveEntityByModelName(AModelName)
 		end
 	end
 	
-	return -1
+	return nil
+end
+
+function GetModelGabaritesCenter(AModel)
+	MinS = Vec3.New(GetWorldModelMinS(AModel))
+	MaxS = Vec3.New(GetWorldModelMaxS(AModel))
+
+	D = Vec3Line.New(MinS.X, MinS.Y, MinS.Z, MaxS.X, MaxS.Y, MaxS.Z)
+	
+	return Vec3LineCenter(D)
 end
