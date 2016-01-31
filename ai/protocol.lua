@@ -4,11 +4,11 @@
 	Forced methods from engine:
 	
 		Initialization()
-	
+
 		Finalization()
-	
+
 		Frame()
-		
+
 		OnTrigger(ATrigger)
 
 
@@ -16,83 +16,83 @@
 
 	ExecuteCommand(command: str)
 		executes command on client
-	
+
 	GetServer(): str
 		server address as text string
 
 	GetTime(): float
 		svc_time
-		
+
 	GetProtocol(): int
 		svc_serverinfo.protocol 
-		
+
 	GetMaxPlayers(): int
 		svc_serverinfo.maxplayers
-	
+
 	GetClientIndex(): int
 		svc_serverinfo.index
-	
+
 	GetGameDir(): str
 		svc_serverinfo.gamedir
-		
+
 	GetMap(): str
 		svc_serverinfo.map
-		
+
 	GetMaxEx(): str
 		extended version of GetMap() - map name truncated here
-	
+
 	GetIntermission(): int
 		svc_intermission state
-		
+
 	IsPaused(): bool
 		svc_setpause state
 
 	MoveTo(pos: float[3])
 	MoveTo(ent: int)
-		
-		
+
+
 	MoveOut(pos: float[3])
 	MoveOut(ent: int)
-		
+
 	LookAt(pos: float[3])
 	LookAt(ent: int)
-	
+
 	GetViewAngles(): float[3]
 	SetViewAngles(angles: float[3])
-		
+
 	LookAtEx(pos: float[3]) 
 	LookAtEx(ent: int) 
-		lookat equivalent with some smoothing
+	lookat equivalent with some smoothing
 
 	PressButton(Button)
 	UnPressButton(Button)
 	IsButtonPressed(Button): bool
-		
+
 	GetOrigin(): float[3]
-	
+
 	GetVelocity(): float[3]
-	
+
 	GetPunchAngle(): float[3]
-	
+
 	GetWeaponAbsoluteIndex(): int
 		clientdata.id
-		
+
 	GetDistance(pos: float[3]): float
 	GetDistance(ent: int): float
-		
+
 	GetDistance2D(pos\ent: float[3]\int): float
-	
+
 	IsWeaponExists(absolute_weapon_index: int): bool
 		this using absolute index, not weaponlist index
-	
+
 	IsCrouching(): bool
 
 	IsOnGround(): bool
 
 	IsSpectator(): bool
-	
+
 	HasWeaponData(absolute_weapon_index): bool
-	
+
 	GetWeaponDataField(weapon_index: int; field: WeaponDataField): any
 		get field from weapondata_t array for specific weapon
 		
@@ -124,385 +124,395 @@
 
 --[[	
 	IsReloading(): bool
-	
+
 	GetMaxSpeed(): float
 		clientdata.maxspeed & movevars.maxspeed
-	
+
 	CanAttack(): boolean
 		is clientdata_t.nextattack <= 0
-	
+
 	IsAlive(): bool
-		
+
 	PrimaryAttack()
 		equivalent for PressButton(ATTACK)
-		
+
 	SecondaryAttack()
 		equivalent for PressButton(ATTACK2)
-		
+
 	FastPrimaryAttack()
-		
+
 	FastSecondaryAttack()
-		
+
 	Jump()
 		equivalent for PressButton(JUMP)
-		
+
 	Duck()
 		equivalent for PressButton(DUCK)
-		
+
 	DuckJump()	
-		
-    GetResourcesCount(): int
-    
+
+	GetResourcesCount(): int
+
 	GetResourceName(index: int): str
-    
+
 	GetResourceType(index: int): int
-    
+
 	GetResourceIndex(index: int): int
-    
+
 	GetResourceSize(index: int): int
-    
+
 	GetResourceFlags(index: int): int
-		
+
 	GetPlayersCount(): int
 		length of players array
-		
-    GetPlayerUserInfo(player_index): str
-	
-    GetPlayerKills(player_index): int
 
-    GetPlayerDeaths(player_index): int
+	GetPlayerUserInfo(player_index): str
 
-    GetPlayerPing(player_index): int
+	GetPlayerKills(player_index): int
 
-    GetPlayerLoss(player_index): int
+	GetPlayerDeaths(player_index): int
 
-    GetPlayerTeam(player_index): str
+	GetPlayerPing(player_index): int
+
+	GetPlayerLoss(player_index): int
+
+	GetPlayerTeam(player_index): str
 		based on TeamInfo gmsg event
-		
-    GetPlayerClassID(player_index): int
+
+	GetPlayerClassID(player_index): int
 		based on ScoreInfo gmsg event
-		
-    GetPlayerTeamID(player_index): int
+
+	GetPlayerTeamID(player_index): int
 		based on ScoreInfo gmsg event
-		
-    GetPlayerHealth(player_index): int
+
+	GetPlayerHealth(player_index): int
 		based on HLTV gmsg event (cstrike, czero only)
-		
-    GetPlayerScoreAttrib(player_index): int 
+
+	GetPlayerScoreAttrib(player_index): int 
 		based on ScoreAttrib gmsg event (cstrike, czero only)
-		
-    GetPlayerLocation(player_index): str
+
+	GetPlayerLocation(player_index): str
 		based on Location gmsg event (cstrike, czero only)
-		
-    GetPlayerRadar(player_index): float[3]
+
+	GetPlayerRadar(player_index): float[3]
 		based on Radar gmsg event (cstrike, czero only)
-		
-    GetPlayerOrigin(player_index): float[3]
+
+	GetPlayerOrigin(player_index): float[3]
 		extended version to resolve player origin
 		it using allocated entity for this player to resolve origin
 		also, if entity isn't active - using GetRadar() instead
-		
-    IsPlayerAlive(player_index): bool
+
+	IsPlayerAlive(player_index): bool
 		based on GetPlayerScoreAttrib(), it will check bit flag SCORE_ATTRIB_FLAG_DEAD
 		working only for cstrike & czero
-		
-    IsPlayerBomber(player_index): bool
+
+	IsPlayerBomber(player_index): bool
 		based on GetPlayerScoreAttrib(), it will check bit flag SCORE_ATTRIB_FLAG_BOMB
 		working only for cstrike & czero
-		
-    IsPlayerVIP(player_index): bool
+
+	IsPlayerVIP(player_index): bool
 		based on GetPlayerScoreAttrib(), it will check bit flag SCORE_ATTRIB_FLAG_VIP
 		working only for cstrike & czero
-		
+
 	GetEntitiesCount(): int
 		length of entities array
-		
-    GetEntityType(index: int): int
-    
+
+	GetEntityType(index: int): int
+
 	GetEntityNumber(index: int): int
-    
+
 	GetEntityMsgTime(index: int): float
-    
+
 	GetEntityMessageNum(index: int): int
-    
+
 	GetEntityOrigin(index: int): float[3]
-    
+
 	GetEntityAngles(index: int): float[3]
-    
+
 	GetEntityModelIndex(index: int): int
-    
+
 	GetEntitySequence(index: int): int
-    
+
 	GetEntityFrame(index: int): float
-    
+
 	GetEntityColorMap(index: int): int
-    
+
 	GetEntitySkin(index: int): int
-    
+
 	GetEntitySolid(index: int): int
-    
+
 	GetEntityEffects(index: int): int
-    
+
 	GetEntityScale(index: int): int
-    
+
 	GetEntityEFlags(index: int): int
-    
+
 	GetEntityRenderMode(index: int): int
-    
+
 	GetEntityRenderAmt(index: int): int
-    
+
 	GetEntityRenderFX(index: int): int
-    
+
 	GetEntityMoveType(index: int): int
-    
+
 	GetEntityAnimTime(index: int): float
-    
+
 	GetEntityFrameRate(index: int): float
-    
+
 	GetEntityBody(index: int): int
-    
+
 	GetEntityVelocity(index: int): float[3]
-    
+
 	GetEntityMinS(index: int): int
-    
+
 	GetEntityMaxS(index: int): int
-    
+
 	GetEntityAimEnt(index: int): int
-    
+
 	GetEntityOwner(index: int): int
-    
+
 	GetEntityFriction(index: int): float
-    
+
 	GetEntityGravity(index: int): float
-    
+
 	GetEntityTeam(index: int): int
-    
+
 	GetEntityPlayerClass(index: int): int
-    
+
 	GetEntityHealth(index: int): int
-    
+
 	GetEntitySpectator(index: int): int
-    
+
 	GetEntityWeaponModel(index: int): int
-    
+
 	GetEntityGaitSequence(index: int): int
-    
+
 	GetEntityBaseVelocity(index: int): float[3]
-    
+
 	GetEntityUseHull(index: int): int
-    
+
 	GetEntityOldButtons(index: int): int
-    
+
 	GetEntityOnGround(index: int): int
-    
+
 	GetEntityStepLeft(index: int): int
-    
+
 	GetEntityFallVelocity(index: int): float
-    
+
 	GetEntityFOV(index: int): int
-    
+
 	GetEntityWeaponAnim(index: int): int
-    
+
 	GetEntityStartPos(index: int): float[3]
-    
+
 	GetEntityEndPos(index: int): float[3]
-    
+
 	GetEntityImpactTime(index: int): float
-    
+
 	GetEntityStartTime(index: int): float
-    
+
 	GetEntityIUser1(index: int): int
-    
+
 	GetEntityIUser2(index: int): int
-    
+
 	GetEntityIUser3(index: int): int
-    
+
 	GetEntityIUser4(index: int): int
-    
+
 	GetEntityFUser1(index: int): int
-    
+
 	GetEntityFUser2(index: int): int
-    
+
 	GetEntityFUser3(index: int): int
-    
+
 	GetEntityFUser4(index: int): int
-    
+
 	GetEntityVUser1(index: int): float[3]
-    
+
 	GetEntityVUser2(index: int): float[3]
-    
+
 	GetEntityVUser3(index: int): float[3]
-    
+
 	GetEntityVUser4(index: int): float[3]
-    
+
 	IsEntityActive(index: int): int
 		is entity currenrly spawned for actor
-			
+
 	GetGroundedOrigin(): float[3]
 		equivalent for GetOrigin with subtracted human height
-	
+
 	GetGroundedDistance(origin: float[3]): float
 	GetGroundedDistance(ent: int): float
 		see below
 
 	GetHealth(): int
 		Health gmsg event
-		
+
 	GetWeaponsCount(): int
 		length of weapon array (WeaponList gmsg event)
-		
-		-> next weapon functions using WeaponList array, be careful
-		
-    GetWeaponName(index_in_weaponlist): str
-    
+
+	-> next weapon functions using WeaponList array, be careful
+
+	GetWeaponName(index_in_weaponlist): str
+
 	GetWeaponPrimaryAmmoID(index_in_weaponlist): int
-    
+
 	GetWeaponPrimaryAmmoMaxAmount(index_in_weaponlist): int
-    
+
 	GetWeaponSecondaryAmmoID(index_in_weaponlist): int
-    
+
 	GetWeaponSecondaryAmmoMaxAmount(index_in_weaponlist): int
-    
+
 	GetWeaponSlotID(index_in_weaponlist): int
-    
+
 	GetWeaponNumberInSlot(index_in_weaponlist): int
-    
+
 	GetWeaponIndex(index_in_weaponlist): int
 		return absolute index for given weapon
-    
+
 	GetWeaponFlags(index_in_weaponlist): int
-    
+
 	GetWeaponNameEx(index_in_weaponlist): str
 		truncated version of GetWeaponName, weapon_m4a1 -> m4a1
-		
+
 	GetWeaponByAbsoluteIndex(absolute_weapon_index): int
 		return weapon index from weaponlist array (WeaponList gmsg event) for using with extended weapon functions
-	
+		return -1 if weapon isn't exist
+
 	GetStatusIconsCount(): int
 		length of status icon array (StatusIcon gmsg event)
-		
+
 	GetStatusIconName(statusicon_index: int): str
-	
+
 	GetStatusIconStatus(statusicon_index: int): int
+
+	GetBombStateActive(): bool
+		is bomb on radar ?
+	
+	GetBombStatePosition(): float[3]
+		get radar bomb position
+		
+	GetBombStatePlanted(): bool
+		is bomb on radar is planted bomb ?
 	
 	IsTeamPlay(): bool
 		gamemode gmsg event state
-		
+
 	GetAmmo(weapon: int): int
 		ammox gmsg event
 
 	HasNavigation(): bool
 		is navigation (*.nav) file loaded
-		
+
 	HasWorld(): bool
 		is world (*.bsp) file loaded
-		
+
 	HasWays(): bool
 		is ways (*.way) file loaded
-		
+
 	IsVisible(pos: float[3]): bool
 	IsVisible(ent: int): bool
 		checks visibility of object (or point) from actor's eyes
-	
+
 	GetNavArea(): int
 		search and return absolute nav area index by actor's origin
-		
+
 	GetNavArea(index: int): int
 		search and return absolute nav area index by nav area index
-		
+
 	GetNavArea(pos: float[3]): int
 		search and return absolute nav area index by position
-		
+
 	GetRandomNavArea(): int
 		this will return random nav area from navigation mesh
-		
-    GetNavAreaIndex(area: int): int
+
+	GetNavAreaIndex(area: int): int
 		return unique nav area index for given nav area
-    
+
 	GetNavAreaFlags(area: int): int
-    
+
 	GetNavAreaName(area: int): str
 		nav area name contains name of location, where nav area stays (if location name set) and unique nav area index
-    
+
 	GetNavAreaCenter(area: int): float[3]
 		return nav area center coords in world
-    
+
 	GetNavAreaConnectionsCount(area: int): int
 		return count of nav areas which connected to given nav area
-    
+
 	GetNavAreaHidingSpotsCount(area: int): int
-    
+
 	GetNavAreaApproachesCount(area: int): int
-	
-    GetNavAreaApproachHere(area, approach: int): int
-    
+
+	GetNavAreaApproachHere(area, approach: int): int
+
 	GetNavAreaApproachPrev(area, approach: int): int
-    
+
 	GetNavAreaApproachNext(area, approach: int): int
-    
+
 	GetNavAreaEncountersCount(area: int): int
-    
+
 	GetNavAreaLaddersCount(area: int): int
-	
+
 	GetNavAreaRandomConnection(area: int): int
 		return random ajacent nav area for given area
 
-    IsNavAreaConnected(area1, area2: int): bool
-	
-    IsNavAreaBiLinked(area1, area2: int): bool
-	
+	IsNavAreaConnected(area1, area2: int): bool
+
+	IsNavAreaBiLinked(area1, area2: int): bool
+
 	GetNavAreaPortal(area1, area2: int): float[3]
 		return coords in world of portal between two connected areas
-		
+
 	GetNavAreaPortal(area1, area: int; start, end: float[3])
 		extended version of GetNavAreaPortal(...) 
-	
+
 	GetNavAreaWindow(area1, area2: int): float[6]
 		return coords of two points between two connected areas
 
 	GetNavChain(area1, area2): array of int
-		
-    GetWorldEntitiesCount(): int
-    
+
+	GetWorldEntitiesCount(): int
+
 	GetWorldVertexesCount(): int
-    
+
 	GetWorldEdgesCount(): int
-    
+
 	GetWorldSurfEdgesCount(): int
-    
+
 	GetWorldTexturesCount(): int
-    
+
 	GetWorldPlanesCount(): int
-    
+
 	GetWorldFacesCount(): int
-    
+
 	GetWorldLeafsCount(): int
-    
+
 	GetWorldNodesCount(): int
-    
+
 	GetWorldClipNodesCount(): int
-    
+
 	GetWorldModelsCount(): int
-	
+
 	GetWorldEntity(field, value: str): int
 		return entity absolute index in world with given field and value
 		return -1 if not found
-		
-    GetWorldEntities(field, value: str): int
+
+	GetWorldEntities(field, value: str): int
 		returns an array of absolute indexes of entities in world with given field and value
-		
+
 	GetWorldRandomEntity(field, value: str): int
 		working like GetWorldEntities(.., ..)[Random(Length(GetWorldEntities(.., ..)))]
-		
-    GetWorldEntityByClassName(classname: str): int
+
+	GetWorldEntityByClassName(classname: str): int
 		equivalent for GetWorldEntity("classname", ...)
-    
+
 	GetWorldEntitiesByClassName(classname: str): int
 		equivalent for GetWorldEntities("classname", ...)
-    
+
 	GetWorldRandomEntityByClassName(classname: str): int
 		equivalent for GetWorldRandomEntity("classname", ...)		
-		
+
 	GetWorldEntityField(index: int, field: str): str
 		returns a string data under the field
 		returns empty string if field does not exist
@@ -511,19 +521,19 @@
 		returns absolute world model index from world models array for model, 
 		who allocated with given entity.
 		returns -1 if entity does not have model or model was not found
-		
-    GetWorldModelMinS(index: int): float[3]
-    
+
+	GetWorldModelMinS(index: int): float[3]
+
 	GetWorldModelMaxS(index: int): float[3]
-    
+
 	GetWorldModelOrigin(index: int): float[3]
-    
+
 	GetWorldModelVisLeafs(index: int): int
-    
+
 	GetWorldModelFirstFace(index: int): int
-    
+
 	GetWorldModelNumFaces(index: int): int
-		
+
 ]]
 
 -- Protocol.pas property
@@ -937,3 +947,42 @@
 	SF_BREAKABLE_SHOW_HUD_INFO = 1 << 4 -- If set, the func_breakable will show HUD info for players looking at it. This is not affected by CVar 'mp_allowmonsterinfo'.
 	SF_BREAKABLE_INSTANT_BREAK = 1 << 8 -- 256 If set, this func_breakable will break instantly if hit with a crowbar.
 	SF_BREAKABLE_EXPLOSIVES_ONLY = 1 << 9 -- If set, this func_breakable can be damaged by explosives only.
+
+	
+-------------------------------
+	
+	HL_PLAYER_MODELS = {
+		"barney", 
+		"gina", 
+		"gman", 
+		"gordon", 
+		"helmet", 
+		"hgrunt", 
+		"recon", 
+		"robo", 
+		"scientist", 
+		"zombie"
+	} 
+	
+	OPFOR_PLAYER_MODELS = {
+		"barney", 
+		"beret", 
+		"cl_suit", 
+		"drill",
+		"fassn", 
+		"gina", 
+		"gman", 
+		"gordon", 
+		"grunt", 
+		"helmet", 
+		"hgrunt", 
+		"massn", 
+		"otis",
+		"recon", 
+		"recruit", 
+		"robo", 
+		"scientist", 
+		"shepard", 
+		"tower", 
+		"zombie"
+	}

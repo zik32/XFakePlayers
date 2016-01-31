@@ -51,7 +51,15 @@ function AttackEx() -- fuck this
 end
 
 function Attack_HL()
+	Index = GetWeaponIndex(CurrentWeapon)
 	
+	if Index == HL_WEAPON_CROWBAR then
+		KnifeAttack(false)
+	elseif Index == HL_WEAPON_EGON then
+		PrimaryAttack()
+	else
+		FastPrimaryAttack()
+	end
 end
 
 function Attack_CS()

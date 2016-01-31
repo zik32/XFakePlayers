@@ -153,10 +153,10 @@ function DestroyBreakables()
 								
 								-- TODO: add Behavior.DestroyExplosions
 								
-								if (GetDistance(C.X, C.Y, C.Z) < Distance) and IsVisible(C.X, C.Y, C.Z) then
+								if (GetDistance(Vec3Unpack(C)) < Distance) and IsVisible(Vec3Unpack(C)) then
 									BreakablePosition = C
 									NeedToDestroy = true
-									Distance = GetDistance(C.X, C.Y, C.Z)
+									Distance = GetDistance(Vec3Unpack(C))
 								end	
 							end
 						end

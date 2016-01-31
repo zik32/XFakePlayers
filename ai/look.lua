@@ -6,7 +6,7 @@ function Look()
 	end
 	
 	if NeedToDestroy then
-		LookAtEx(BreakablePosition.X, BreakablePosition.Y, BreakablePosition.Z)
+		LookAtEx(Vec3Unpack(BreakablePosition))
 		return
 	end
 	
@@ -16,7 +16,7 @@ function Look()
 		PrimitiveLook()
 	end
 	
-	LookAtEx(LookPoint.X, LookPoint.Y, LookPoint.Z)
+	LookAtEx(Vec3Unpack(LookPoint))
 end
 
 function PrimitiveLook()

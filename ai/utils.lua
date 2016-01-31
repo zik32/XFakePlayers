@@ -24,12 +24,14 @@ function SlowDuckJump()
 end
 
 function GetScenarioName(AScenario)
-	if AScenario == ScenarioType.None then
-		return "None"
-	elseif AScenario == ScenarioType.Walking then
+	if AScenario == ScenarioType.Walking then
 		return "Walking"
 	elseif AScenario == ScenarioType.PlantingBomb then
 		return "Planting Bomb"
+	elseif AScenario == ScenarioType.DefusingBomb then
+		return "Defusing Bomb"
+	elseif AScenario == ScenarioType.SearchingBomb then
+		return "Searching Bomb"
 	else
 		return "GetScenarioName: unknown scenario " .. AScenario
 	end
@@ -45,20 +47,22 @@ function UpdateScenario()
 	LastScenarioChangeTime = Ticks()
 	
 	if (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
-		if IsWeaponExists(CS_WEAPON_C4) then
-			Scenario = ScenarioType.PlantingBomb
+		if GetPlayerTeam(GetClientIndex()) == "TERRORIST" then
+			
+			if IsWeaponExists(CS_WEAPON_C4) then
+				Scenario = ScenarioType.PlantingBomb
+			elseif IsBombDropped then
+				Scenario = ScenarioType.SearchingBomb
+			end
+		
+		elseif GetPlayerTeam(GetClientIndex()) == "CT" then
+			
+			if IsBombPlanted then
+				Scenario = ScenarioType.DefusingBomb
+			end
+			
 		end
 	end
-
-	
-	if PreviousScenario ~= Scenario then
-		print("scenario: " .. string.lower(GetScenarioName(Scenario)))
-	end
-end
-
-function ResetScenario()
-	PreviousScenario = Scenario
-	Scenario = ScenarioType.None
 end
 
 -- weapon utils	
@@ -73,13 +77,47 @@ function FindCurrentWeapon()
 	LastKnownWeapon = CurrentWeapon
 end
 
-function FindWeaponBySlot(ASlot)
+function FindHeaviestWeaponInSlot(ASlot)
 	Weapon = nil
 	Weight = -1
 	
 	for I = 0, GetWeaponsCount() - 1 do
 		if IsWeaponExists(GetWeaponIndex(I)) then
 			if GetWeaponSlotID(I) == ASlot then
+				if GetWeaponWeight(I) > Weight then
+					Weapon = I
+					Weight = GetWeaponWeight(I)
+				end
+			end
+		end
+	end
+	
+	return Weapon
+end
+
+function FindHeaviestWeapon()
+	Weapon = nil
+	Weight = -1
+	
+	for I = 0, GetWeaponsCount() - 1 do
+		if IsWeaponExists(GetWeaponIndex(I)) then
+			if GetWeaponWeight(I) > Weight then
+				Weapon = I
+				Weight = GetWeaponWeight(I)
+			end
+		end
+	end
+	
+	return Weapon
+end
+
+function FindHeaviestUsableWeapon(IsInstant)
+	Weapon = nil
+	Weight = -1
+	
+	for I = 0, GetWeaponsCount() - 1 do
+		if IsWeaponExists(GetWeaponIndex(I)) then
+			if CanUseWeapon(I, IsInstant) then
 				if GetWeaponWeight(I) > Weight then
 					Weapon = I
 					Weight = GetWeaponWeight(I)

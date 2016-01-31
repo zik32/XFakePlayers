@@ -53,13 +53,16 @@ function ChooseBestWeapon()
 end
 
 function ChooseBestWeapon_HL()
-
+	Crowbar = GetWeaponByAbsoluteIndex(HL_WEAPON_CROWBAR)
+	Best = FindHeaviestWeapon(HasEnemiesNear or NeedToDestroy)
+	
+	ChooseWeapon(Best)
 end
 
 function ChooseBestWeapon_CS()
-	Rifle = FindWeaponBySlot(CS_WEAPON_SLOT_RIFLE)
-	Pistol = FindWeaponBySlot(CS_WEAPON_SLOT_PISTOL)
-	Knife = FindWeaponBySlot(CS_WEAPON_SLOT_KNIFE)
+	Rifle = FindHeaviestWeaponInSlot(CS_WEAPON_SLOT_RIFLE)
+	Pistol = FindHeaviestWeaponInSlot(CS_WEAPON_SLOT_PISTOL)
+	Knife = FindHeaviestWeaponInSlot(CS_WEAPON_SLOT_KNIFE)
 	
 	if HasEnemiesNear or NeedToDestroy then
 		if CanUseWeapon(Rifle, true) then

@@ -4,10 +4,10 @@
 	Idle = false
 
 	SLOW_THINK_PERIOD = 1000
-	
+
 	KNIFE_PRIMARY_ATTACK_DISTANCE = HUMAN_WIDTH * 2
 	KNIFE_ALTERNATIVE_ATTACK_DISTANCE = KNIFE_PRIMARY_ATTACK_DISTANCE / 1.5
-	
+
 	OBJECTIVE_LOOKING_AREA_OFFSET = 2;
 	
 -- movement
@@ -16,17 +16,17 @@
 	SlowJumpTime = 0
 	
 	ScenarioType = {
-		None = 0,
-		
 		Walking = 1, -- randomly walk on navigation map, nothing more
 		
 		-- cstrike, czero scenarios:
 		
-		PlantingBomb = 2 -- find and walk to random bomb place (terrorist)
-		-- DefusingBomb = 3 -- PlantingBomb equivalent, but with c4 entity searching (counter-terrorists)
-		-- DefendingBomb = 4 -- find and stay near planted c4 at bomb place, if actor is terrorist. 
-							 -- or find and stay near dropped c4 (backpack), if actor is counter-terrorist
-		-- SearchingBomb = 5 -- if bomb was dropped - i need to pick up it, if actor is terrorist
+		PlantingBomb = 2, -- run to random bomb place
+		DefusingBomb = 3, -- search planted c4 at bomb places
+		
+		-- DefendingBomb = 4 -- find and stay near planted c4 at bomb place (terrorist)
+							 -- or find and stay near dropped c4 (backpack) (counter-terrorist)
+		SearchingBomb = 5 -- if bomb was dropped - i need to pick up it (terrorist)
+		
 		-- EscapingFromBomb = 6 -- fuck you
 		
 		-- TODO: add hostages rescuing scenarios for cstrike, czero
@@ -35,27 +35,27 @@
 		
 	}
 	
-	PreviousScenario = ScenarioType.None
-	Scenario = ScenarioType.None
+	Scenario = ScenarioType.Walking
+	ChainScenarion = ScenarioType.Walking
 	LastScenarioChangeTime = 0
 
 	Area = nil
 	PrevArea = nil
 	IsAreaChanged = false
-	
+
 	Chain = {}
 	ChainIndex = 0
 	ChainFinalPoint = {}
-	
+
 	STUCK_CHECK_PERIOD = 500
 	LastStuckMonitorTime = 0
-	
+
 	LastStuckCheckTime = 0
 	StuckWarnings = 0
 	UnstuckWarnings = 0
 	StuckOrigin = {}
 	TryedToUnstuck = false
-	
+
 -- look
 
 	LookPoint = {}
@@ -64,9 +64,9 @@
 
 	CurrentWeapon = nil
 	LastKnownWeapon = nil -- only for hint
-	
+
 	NeedToBuyWeapons = false
-	
+
 -- attack
 
 	LastAttackTime = 0
@@ -87,8 +87,11 @@
 	LastSlowThinkTime = 0
 
 	IsSpawned = false
-	
+
 	IsEndOfRound = false
+
+	IsBombPlanted = false
+	IsBombDropped = false
 	
 	Behavior = {
 		MoveWhenShooting = true,
@@ -102,15 +105,15 @@
 		
 	}
 
-    NearestEnemy = nil
-    NearestLeaderEnemy = nil
-    EnemiesNearCount = 0
-    HasEnemiesNear = false
+	NearestEnemy = nil
+	NearestLeaderEnemy = nil
+	EnemiesNearCount = 0
+	HasEnemiesNear = false
 
-    NearestFriend = nil
-    NearestLeaderFriend = nil
-    FriendsNearCount = 0
-    HasFriendsNear = false
+	NearestFriend = nil
+	NearestLeaderFriend = nil
+	FriendsNearCount = 0
+	HasFriendsNear = false
 	
 	NearestPlayer = nil
 	NearestLeaderPlayer = nil
@@ -140,6 +143,8 @@ function Think()
 		if IsSpawned then
 			Die()
 		end
+		
+		TryToRespawn()
 	end
 end 
 
@@ -165,7 +170,7 @@ function PostThink()
 	-- decrease recoil
 	
 	V = Vec3.New(GetViewAngles()) - Vec3.New(GetPunchAngle())
-	SetViewAngles(V.X, V.Y, V.Z)
+	SetViewAngles(Vec3Unpack(V))
 end
 
 function Spawn()
@@ -177,7 +182,6 @@ function Spawn()
 	
 	ResetObjectiveMovement()
 	ResetStuckMonitor()
-	ResetScenario()
 	
 	print "spawned"
 end
@@ -186,4 +190,17 @@ function Die()
 	IsSpawned = false
 	
 	print "died"
+end
+
+function TryToRespawn()
+	if not IsSlowThink then
+		return
+	end
+	
+	if (GetGameDir() == "valve")
+	or (GetGameDir() == "dmc")
+	or (GetGameDir() == "tfc")
+	or (GetGameDir() == "gearbox") then
+		PrimaryAttack()
+	end
 end

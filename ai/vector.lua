@@ -5,6 +5,16 @@ function Vec3.New(X, Y, Z)
   return setmetatable({X = X or 0, Y = Y or 0, Z = Z or 0}, Vec3)
 end
 
+function Vec3.__eq(A, B)
+	if type(A) == "number" then
+		return A == B.X and A == B.Y and A == B.Z
+	elseif type(B) == "number" then
+		return A.X == B and A.Y == B and A.Z == B
+	else
+		return A.X == B.X and A.Y == B.Y and A.Z == B.Z
+	end
+end
+
 function Vec3.__add(A, B)
 	if type(A) == "number" then
 		return Vec3.New(A + B.X, A + B.Y, A + B.Z)
@@ -53,6 +63,10 @@ function Vec3Length(V)
 	return math.sqrt(Vec3DotProduct(V, V))
 end
 
+function Vec3Unpack(V) 
+	return V.X, V.Y, V.Z -- this code sucks! give me a better solution, anonimous..
+end
+
 function Vec3.__tostring(A)
 	return("X: " .. math.floor(A.X) .. ", Y: " .. math.floor(A.Y) .. ", Z: " .. math.floor(A.Z))
 end
@@ -62,6 +76,16 @@ Vec2.__index = Vec2
 
 function Vec2.New(X, Y)
 	return setmetatable({X = X or 0, Y = Y or 0}, Vec2)
+end
+
+function Vec2.__eq(A, B)
+	if type(A) == "number" then
+		return A == B.X and A == B.Y
+	elseif type(B) == "number" then
+		return A.X == B and A.Y == B
+	else
+		return A.X == B.X and A.Y == B.Y
+	end
 end
 
 function Vec2.__add(A, B)
